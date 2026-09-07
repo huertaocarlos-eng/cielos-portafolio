@@ -1,0 +1,1099 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cuando el cielo sostiene mis manos — Portafolio de Astrofotografía | Carlos Huerta</title>
+<meta name="description" content="Cuando el cielo sostiene mis manos: proyecto de astrofotografía y divulgación de Carlos Huerta en Tarapacá, Chile. Portafolio, extensión educativa y búsqueda de financiamiento y alianzas.">
+<meta property="og:title" content="Cuando el cielo sostiene mis manos — Carlos Huerta, Astrofotografía">
+<meta property="og:description" content="Portafolio de astrofotografía y proyecto cultural en búsqueda de financiamiento y alianzas. Desierto de Tarapacá, Chile.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ================================================================
+   1. TOKENS DE DISEÑO
+   ================================================================ */
+:root{
+  --ink:#0a0e14;
+  --ink-soft:#12161f;
+  --violet:#241f38;
+  --cream:#f1ece0;
+  --star:#e8e4d9;
+  --ochre:#c98d4b;
+  --rose:#a8788c;
+  --wa:#25d366;
+  --serif:'Fraunces', Georgia, serif;
+  --sans:'Archivo', -apple-system, sans-serif;
+  --gap:14px;            /* separación entre fichas de la galería */
+  --row-unit:8px;        /* unidad de fila del masonry (debe coincidir con el JS) */
+}
+
+*{box-sizing:border-box;}
+html{background:var(--ink); scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--ink);
+  color:var(--cream);
+  font-family:var(--sans);
+  overflow-x:hidden;
+}
+::selection{background:var(--ochre);color:var(--ink);}
+a{color:inherit;}
+img{display:block;max-width:100%;}
+figure{margin:0;}
+
+/* ================================================================
+   2. CHROME FIJO (barra de progreso, wordmark, navegación capítulos)
+   ================================================================ */
+#progress{
+  position:fixed;top:0;left:0;width:0%;height:2px;
+  background:var(--ochre);
+  z-index:60;
+  transition:width .12s linear;
+}
+#wordmark{
+  position:fixed;top:1.5rem;left:1.6rem;
+  font-family:var(--serif);font-size:.95rem;letter-spacing:.02em;
+  color:var(--cream);
+  opacity:0;
+  transition:opacity .7s ease;
+  z-index:50;
+  cursor:pointer;
+  text-decoration:none;
+  text-shadow:0 1px 10px rgba(5,6,9,.9), 0 1px 3px rgba(5,6,9,.9);
+}
+#wordmark.show{opacity:.85;}
+#wordmark:hover{opacity:1;}
+
+#chapternav{
+  position:fixed;right:1.6rem;bottom:1.6rem;
+  display:flex;gap:.85rem;
+  font-size:.78rem;letter-spacing:.04em;
+  z-index:50;
+  opacity:0;
+  transition:opacity .7s ease;
+}
+#chapternav.show{opacity:1;}
+#chapternav a{
+  color:rgba(241,236,224,.55);
+  text-decoration:none;
+  transition:color .3s ease;
+  text-shadow:0 1px 10px rgba(5,6,9,.9), 0 1px 3px rgba(5,6,9,.9);
+}
+#chapternav a:hover,
+#chapternav a.active{color:var(--ochre);}
+
+#wordmark:focus-visible,
+#chapternav a:focus-visible,
+.btn:focus-visible,
+#wa-fab:focus-visible,
+.taller-card a:focus-visible{
+  outline:2px solid var(--ochre);
+  outline-offset:4px;
+}
+
+/* ================================================================
+   3. HERO + PALABRAS DEL AUTOR
+   ================================================================ */
+.slide{
+  position:relative;
+  width:100%;
+  min-height:100vh;
+  min-height:100svh;
+  display:flex;
+  overflow:hidden;
+}
+.bg-wrap{position:absolute;inset:0;overflow:hidden;}
+.bg-wrap img{
+  width:100%;height:100%;
+  object-fit:cover;
+  object-position:center;
+  transform:scale(1.0);
+  transition:transform 9s cubic-bezier(.16,.6,.2,1);
+  will-change:transform;
+}
+.slide.in-view .bg-wrap img{transform:scale(1.09);}
+.scrim-full::after{
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(8,10,15,.55) 0%, rgba(8,10,15,.35) 40%, rgba(8,10,15,.75) 100%);
+  pointer-events:none;
+}
+
+.hero{align-items:flex-end;justify-content:center;}
+.hero-content{
+  position:relative;z-index:2;
+  max-width:660px;
+  padding:0 1.6rem 6.4rem;
+  text-align:center;
+}
+.hero-title{
+  font-family:var(--serif);
+  font-weight:500;
+  font-size:clamp(2.1rem, 6.4vw, 4.1rem);
+  line-height:1.08;
+  margin:0 0 .85rem;
+  text-shadow:0 2px 24px rgba(5,6,9,.55);
+}
+.hero-sub{font-size:1rem;color:var(--star);opacity:.9;margin:0 0 1.6rem;}
+.hero-meta{
+  font-size:.82rem;letter-spacing:.02em;
+  color:rgba(241,236,224,.62);line-height:1.7;
+}
+.hero-meta span{display:block;}
+.scroll-cue{
+  position:absolute;left:50%;bottom:1.8rem;
+  transform:translateX(-50%);
+  z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  font-size:.72rem;letter-spacing:.08em;
+  color:rgba(241,236,224,.55);
+}
+.scroll-cue .line{
+  width:1px;height:34px;
+  background:linear-gradient(to bottom, rgba(241,236,224,.65), transparent);
+  animation:cue 2.4s ease-in-out infinite;
+}
+@keyframes cue{
+  0%{opacity:.15; transform:scaleY(.4); transform-origin:top;}
+  50%{opacity:1; transform:scaleY(1); transform-origin:top;}
+  100%{opacity:.15; transform:scaleY(.4); transform-origin:top;}
+}
+
+.words{
+  background:var(--ink);
+  padding:16vh 1.6rem 18vh;
+  display:flex;
+  justify-content:center;
+  position:relative;
+}
+.starfield{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.starfield span{position:absolute;background:var(--star);border-radius:50%;}
+.words-inner{max-width:620px;position:relative;z-index:2;}
+.words h2{
+  font-family:var(--serif);font-weight:500;
+  font-size:clamp(1.7rem, 4.2vw, 2.5rem);
+  margin:0 0 2.6rem;
+}
+.words p{
+  font-family:var(--serif);
+  font-size:1.14rem;line-height:1.8;
+  color:rgba(241,236,224,.88);
+  margin:0 0 1.7rem;
+  opacity:0;transform:translateY(16px);
+  transition:opacity 1s ease, transform 1s ease;
+}
+.words p.in-view{opacity:1;transform:none;}
+.words .signature{
+  margin-top:2.4rem;font-family:var(--sans);
+  font-size:.86rem;color:rgba(241,236,224,.72);
+  text-align:center;
+  opacity:0;transform:translateY(16px);
+  transition:opacity 1s ease, transform 1s ease;
+}
+.words .signature.in-view{opacity:1;transform:none;}
+.firma{
+  width:min(300px, 78%);
+  height:auto;
+  display:block;
+  margin:0 auto 1.1rem;
+  color:var(--cream);
+  overflow:visible;
+}
+/* animación de escritura: barrido de revelado de izquierda a derecha */
+.firma{ clip-path:inset(0 100% 0 0); }
+.signature.in-view .firma{
+  animation:write 2.2s cubic-bezier(.5,.1,.3,.9) forwards;
+}
+@keyframes write{ to{ clip-path:inset(0 -2% 0 0); } }
+.words .signature .name{
+  display:block;font-family:var(--serif);
+  font-size:1rem;color:var(--cream);margin-bottom:.35rem;
+}
+
+/* ================================================================
+   4. GALERÍA MASONRY  (CSS Grid + span calculado en JS, sin recortes)
+   ================================================================ */
+.chapter-band{
+  padding:14vh 1.6rem 6vh;
+  text-align:center;
+}
+.chapter-band .numeral{
+  font-family:var(--serif);
+  font-size:clamp(2.6rem, 9vw, 5.2rem);
+  color:var(--ochre);
+  opacity:.92;
+  margin:0 0 .3rem;
+}
+.chapter-band h3{
+  font-family:var(--serif);font-weight:500;
+  font-size:clamp(1.5rem, 3.6vw, 2.3rem);
+  margin:0;
+}
+.chapter-band .count{
+  margin-top:1.3rem;
+  font-size:.76rem;letter-spacing:.08em;
+  color:rgba(241,236,224,.45);
+}
+
+.masonry{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  grid-auto-rows:var(--row-unit);   /* filas finas: el JS asigna el alto exacto */
+  column-gap:var(--gap);
+  row-gap:0;
+  padding:0 clamp(1rem, 3vw, 3rem) 8vh;
+  max-width:1600px;
+  margin:0 auto;
+}
+@media (min-width:1400px){
+  .masonry{grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));}
+}
+
+.tile{
+  /* el span (alto en unidades de fila) lo fija el JS vía --span */
+  grid-row-end:span var(--span, 42);
+  margin-bottom:var(--gap);
+  position:relative;
+  border-radius:10px;
+  overflow:hidden;
+  background:var(--ink-soft);
+  opacity:0;
+  transform:translateY(18px);
+  transition:opacity .8s ease, transform .8s ease, box-shadow .45s ease;
+}
+.tile.in-view{opacity:1;transform:none;}
+.tile:hover{box-shadow:0 18px 50px -18px rgba(0,0,0,.8);}
+
+.tile img{
+  width:100%;
+  height:auto;
+  /* el aspect-ratio real viene de los atributos width/height del <img>
+     => cero layout shift y el span se puede calcular ANTES de que cargue */
+}
+
+.tile figcaption{
+  position:absolute;top:.65rem;right:.65rem;
+  font-size:.66rem;letter-spacing:.08em;
+  color:rgba(241,236,224,.85);
+  background:rgba(10,14,20,.55);
+  backdrop-filter:blur(6px);
+  padding:.25rem .5rem;
+  border-radius:999px;
+  opacity:0;
+  transition:opacity .35s ease;
+}
+.tile:hover figcaption,
+.tile:focus-within figcaption{opacity:1;}
+
+/* ================================================================
+   5. TALLERES
+   ================================================================ */
+.talleres{
+  padding:14vh 1.6rem;
+  background:linear-gradient(180deg, var(--ink) 0%, var(--violet) 55%, var(--ink) 100%);
+  position:relative;
+}
+.talleres-inner{max-width:1100px;margin:0 auto;}
+.talleres .kicker{
+  font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;
+  color:#d9a05f;margin:0 0 .8rem;text-align:center;
+}
+.talleres h2{
+  font-family:var(--serif);font-weight:500;
+  font-size:clamp(1.8rem, 4.4vw, 2.7rem);
+  text-align:center;margin:0 0 1rem;
+}
+.talleres .lead{
+  text-align:center;max-width:560px;margin:0 auto 3.4rem;
+  color:rgba(241,236,224,.72);font-size:.98rem;line-height:1.75;
+}
+.talleres-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap:1.2rem;
+}
+.taller-card{
+  display:flex;flex-direction:column;
+  background:rgba(241,236,224,.045);
+  border:1px solid rgba(241,236,224,.2);
+  border-radius:16px;
+  padding:1.8rem 1.6rem;
+  transition:transform .45s ease, border-color .45s ease, background .45s ease;
+}
+.taller-card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(201,141,75,.55);
+  background:rgba(241,236,224,.07);
+}
+.taller-card .tag{
+  font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ochre);margin:0 0 .7rem;
+}
+.taller-card h3{
+  font-family:var(--serif);font-weight:500;
+  font-size:1.3rem;margin:0 0 .8rem;
+}
+.taller-card p{
+  font-size:.9rem;line-height:1.7;
+  color:rgba(241,236,224,.82);
+  margin:0 0 1.1rem;
+}
+.taller-card ul{
+  list-style:none;margin:0 0 1.6rem;padding:0;
+  font-size:.85rem;color:rgba(241,236,224,.78);
+}
+.taller-card li{
+  padding:.32rem 0 .32rem 1.35rem;position:relative;
+}
+.taller-card li::before{
+  content:"✦";position:absolute;left:0;top:.32rem;
+  color:var(--ochre);font-size:.72rem;
+}
+.taller-card .btn{margin-top:auto;justify-content:center;}
+
+/* ================================================================
+   6. CIERRE + BOTONES DE CONTACTO
+   ================================================================ */
+.closing{
+  background:var(--ink);
+  align-items:center;justify-content:center;
+  flex-direction:column;
+  text-align:center;
+  padding:2.5rem 1.6rem 9rem;   /* aire extra abajo para el FAB */
+}
+.closing h2{
+  font-family:var(--serif);font-weight:500;
+  font-size:clamp(1.8rem, 4.4vw, 2.7rem);
+  margin:0 0 1.1rem;max-width:540px;
+}
+.closing .tagline{
+  font-size:.84rem;letter-spacing:.03em;
+  color:rgba(241,236,224,.6);margin:0 0 2.6rem;
+}
+
+/* botones modernos (sustituyen a los enlaces de texto) */
+.btn-row{
+  display:flex;flex-wrap:wrap;gap:.9rem;justify-content:center;
+}
+.btn{
+  position:relative;
+  display:inline-flex;align-items:center;gap:.6rem;
+  padding:.85rem 1.55rem;
+  border-radius:999px;
+  border:1px solid rgba(241,236,224,.38);
+  background:rgba(241,236,224,.06);
+  color:var(--cream);
+  font-family:var(--sans);font-size:.9rem;font-weight:500;letter-spacing:.03em;
+  text-decoration:none;
+  transition:transform .35s ease, border-color .35s ease, color .35s ease, box-shadow .35s ease, background .35s ease;
+}
+.btn svg{width:17px;height:17px;flex:none;fill:currentColor;}
+.btn:hover{
+  transform:translateY(-2px);
+  border-color:var(--ochre);
+  color:var(--ochre);
+  box-shadow:0 12px 34px -12px rgba(201,141,75,.4);
+}
+.btn-primary{
+  background:var(--ochre);
+  border-color:var(--ochre);
+  color:var(--ink);
+}
+.btn-primary:hover{
+  background:#d99a58;
+  color:var(--ink);
+  box-shadow:0 14px 38px -12px rgba(201,141,75,.55);
+}
+
+.closing .foot{
+  margin-top:3rem;
+  font-size:.72rem;letter-spacing:.04em;
+  color:rgba(241,236,224,.35);
+}
+
+/* ================================================================
+   7. WHATSAPP FLOTANTE (esquina inferior IZQUIERDA: el nav de
+      capítulos vive en la derecha, así nunca se superponen)
+   ================================================================ */
+#wa-fab{
+  position:fixed;left:1.6rem;bottom:1.6rem;
+  z-index:55;
+  display:flex;align-items:center;gap:.55rem;
+  width:56px;height:56px;
+  padding:0;
+  border:none;border-radius:50%;
+  background:var(--wa);
+  color:#062b16;
+  box-shadow:0 10px 30px -8px rgba(37,211,102,.45), 0 4px 14px rgba(0,0,0,.5);
+  cursor:pointer;
+  text-decoration:none;
+  overflow:hidden;
+  transition:width .4s cubic-bezier(.16,.6,.2,1), border-radius .4s ease, transform .3s ease, box-shadow .3s ease;
+}
+#wa-fab svg{width:26px;height:26px;flex:none;margin:0 15px;fill:currentColor;}
+#wa-fab .wa-label{
+  font-size:.85rem;font-weight:600;letter-spacing:.02em;
+  white-space:nowrap;opacity:0;
+  transition:opacity .25s ease;
+}
+/* al hacer hover/focus se expande mostrando el texto "Escríbeme" */
+#wa-fab:hover,
+#wa-fab:focus-visible{
+  width:auto;border-radius:999px;
+  transform:translateY(-2px);
+  box-shadow:0 16px 40px -8px rgba(37,211,102,.6), 0 6px 18px rgba(0,0,0,.55);
+}
+#wa-fab:hover .wa-label,
+#wa-fab:focus-visible .wa-label{opacity:1;}
+/* halo pulsante sutil para atraer la mirada sin molestar */
+#wa-fab::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:0 0 0 0 rgba(37,211,102,.5);
+  animation:wa-pulse 3.2s ease-out infinite;
+  pointer-events:none;
+}
+@keyframes wa-pulse{
+  0%{box-shadow:0 0 0 0 rgba(37,211,102,.45);}
+  70%{box-shadow:0 0 0 16px rgba(37,211,102,0);}
+  100%{box-shadow:0 0 0 0 rgba(37,211,102,0);}
+}
+
+/* ================================================================
+   8. RESPONSIVE + ACCESIBILIDAD
+   ================================================================ */
+@media (max-width:640px){
+  #chapternav{gap:.6rem;font-size:.72rem;bottom:1.2rem;right:1.2rem;}
+  #wordmark{top:1.2rem;left:1.2rem;font-size:.86rem;}
+  #wa-fab{left:1.2rem;bottom:1.2rem;width:50px;height:50px;}
+  #wa-fab svg{width:23px;height:23px;margin:0 13px;}
+  .masonry{grid-template-columns:repeat(auto-fill, minmax(min(100%, 160px), 1fr));--gap:10px;}
+  .btn-row{flex-direction:column;align-items:stretch;}
+  .btn{justify-content:center;}
+}
+
+/* "skip to content": primer elemento enfocable con Tab */
+.skip-link{
+  position:absolute;left:-9999px;top:0;z-index:100;
+  background:var(--ochre);color:var(--ink);
+  padding:.7rem 1.2rem;border-radius:0 0 8px 0;
+  font-weight:600;text-decoration:none;
+}
+.skip-link:focus{left:0;}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  .bg-wrap img{transition:none !important; transform:none !important;}
+  .slide.in-view .bg-wrap img{transform:none !important;}
+  .words p, .words .signature{transition:opacity .3s ease; transform:none;}
+  .scroll-cue .line{animation:none;}
+  .tile{opacity:1;transform:none;transition:none;}
+  #wa-fab::before{animation:none;}
+  .btn, .taller-card, #wa-fab{transition:none;}
+  .firma{ clip-path:none !important; animation:none !important; }
+}
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#gallery-start">Saltar a la galería</a>
+
+<div id="progress" aria-hidden="true"></div>
+<a href="#top" id="wordmark">C. Huerta</a>
+
+<nav id="chapternav" aria-label="Capítulos del portafolio">
+  <a href="#cap-I" data-cap="I">I</a>
+  <a href="#cap-II" data-cap="II">II</a>
+  <a href="#cap-III" data-cap="III">III</a>
+  <a href="#cap-IV" data-cap="IV">IV</a>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="slide hero scrim-full" id="top">
+  <div class="bg-wrap">
+    <img src="assets/hero.jpg"
+         width="1800" height="1199"
+         alt="Vía Láctea, un cometa y la Luna sobre el horizonte del desierto de Tarapacá, con las luces de poblados lejanos a la distancia"
+         loading="eager" fetchpriority="high" decoding="async">
+  </div>
+  <div class="hero-content">
+    <h1 class="hero-title">Cuando el cielo sostiene mis manos</h1>
+    <p class="hero-sub">Portafolio de Astrofotografía</p>
+    <p class="hero-meta">
+      <span>Carlos Fabrizio Huerta Orellana</span>
+      <span>Astrofotógrafo · Vivo con Parkinson hace 10 años</span>
+      <span>Región de Tarapacá, Chile</span>
+    </p>
+  </div>
+  <div class="scroll-cue" aria-hidden="true"><span>desliza</span><span class="line"></span></div>
+</section>
+
+<!-- ═══════════════ PALABRAS DEL AUTOR ═══════════════ -->
+<section class="slide words" aria-labelledby="palabras-title">
+  <div class="starfield" id="starfield" aria-hidden="true"></div>
+  <div class="words-inner">
+    <h2 id="palabras-title">Palabras del autor</h2>
+    <p>Tengo un ritual: esperar. Esperar a que el viento se calme, a que el cielo se despeje, a que la noche entregue su luz. Entre el desierto, el altiplano y la costa de Tarapacá aprendí que el firmamento no se mira: se habita.</p>
+    <p>Vivo con Parkinson hace diez años. El cuerpo a veces pone límites, pero la noche abre espacio. Cuando encuadro, el temblor deja de ser el centro — el centro pasa a ser esa luz que viajó miles de años para terminar en mi cámara.</p>
+    <p>Cada fotografía es una conversación con la oscuridad: paciencia, frío, intentos. Y cuando por fin aparece la imagen, siento una forma de libertad que no cabe en palabras. Transformo la dificultad en creación; la noche en memoria.</p>
+    <p>Este portafolio es mi invitación a mirar Tarapacá con otros ojos: un territorio donde el cielo todavía puede ser patrimonio, esperanza y futuro.</p>
+    <div class="signature">
+      <!-- Firma original: trazo manuscrito "C. Huerta" con órbita y estrella -->
+      <svg class="firma" viewBox="-118.9 -865.9 4043.8 1097.8" role="img" aria-label="Firma de C. Huerta"><g transform="scale(1 -1)" fill="currentColor"><path d="M371 -107Q280 -107 209.5 -70.5Q139 -34 99.5 37.5Q60 109 60 213Q60 275 76.0 337.0Q92 399 119.5 456.0Q147 513 181 561Q166 621 166 691Q166 744 178 792Q182 806 192 806Q200 806 199 796Q196 776 194.0 753.5Q192 731 192 700Q192 642 203 590Q213 603 223 614Q264 659 320.0 698.5Q376 738 444.5 762.0Q513 786 590 786Q662 786 722.0 759.5Q782 733 818.5 683.5Q855 634 855 564Q855 520 831.5 474.0Q808 428 764.5 389.5Q721 351 659.5 327.0Q598 303 522 303Q422 303 339.0 347.0Q256 391 210 481Q170 410 151.0 337.0Q132 264 132 198Q132 102 164.0 42.0Q196 -18 252.5 -46.5Q309 -75 382 -75Q512 -75 610.5 -9.5Q709 56 773 193Q785 193 785 184Q723 36 615.5 -35.5Q508 -107 371 -107ZM253 548Q240 530 228 511Q263 429 335.0 379.0Q407 329 516 329Q585 329 639.5 350.0Q694 371 731.5 406.0Q769 441 789.0 483.5Q809 526 809 569Q809 622 780.5 662.0Q752 702 703.0 724.5Q654 747 592 747Q530 747 467.5 721.0Q405 695 349.5 650.0Q294 605 253 548Z" transform="translate(0 0)"/><path d="M106 -15Q90 -15 80.0 -5.0Q70 5 70 20Q70 40 85.5 54.0Q101 68 119 68Q135 68 145.0 58.5Q155 49 155 34Q155 15 140.0 0.0Q125 -15 106 -15Z" transform="translate(714 0)"/><path d="M308 -173Q250 -173 193.5 -159.5Q137 -146 91.5 -115.0Q46 -84 19.0 -31.5Q-8 21 -8 99Q-8 155 11.0 204.0Q30 253 61.0 283.5Q92 314 127 314Q139 314 139 308Q139 302 126 298Q101 292 77.5 267.5Q54 243 39.0 203.0Q24 163 24 108Q24 42 48.5 0.0Q73 -42 112.0 -66.0Q151 -90 194.5 -99.5Q238 -109 277 -109Q387 -109 478.5 -74.5Q570 -40 643.5 21.0Q717 82 771.5 161.5Q826 241 862 332Q863 335 864 338Q848 337 837.0 335.0Q826 333 816 329Q794 321 783 321Q777 321 777 329Q777 343 791.5 358.5Q806 374 827 375Q835 375 849.5 375.5Q864 376 880 376Q899 424 921.0 475.0Q943 526 964.0 572.0Q985 618 1001.0 652.0Q1017 686 1024 700Q969 694 910.0 689.5Q851 685 794.0 675.5Q737 666 686 645Q592 606 549.5 542.5Q507 479 507 401Q507 352 534.0 320.0Q561 288 605 288Q645 288 675.0 312.5Q705 337 722.5 374.5Q740 412 740 449Q740 461 737.5 470.5Q735 480 733 484Q733 491 739 491Q752 491 756.5 472.5Q761 454 761 436Q761 396 739.5 357.0Q718 318 680.5 292.5Q643 267 596 267Q554 267 519.5 288.5Q485 310 464.0 347.0Q443 384 443 429Q443 493 472.0 542.5Q501 592 551.5 627.0Q602 662 665 680Q726 698 791.5 705.0Q857 712 920.5 715.5Q984 719 1037 724Q1047 742 1062.5 761.0Q1078 780 1097.0 793.5Q1116 807 1136 807Q1151 807 1162.0 799.5Q1173 792 1173 776Q1173 752 1154.5 736.5Q1136 721 1108.0 713.0Q1080 705 1053 701Q1042 680 1027.0 642.0Q1012 604 994.5 557.5Q977 511 959.5 463.5Q942 416 927 375Q961 373 1006.5 370.5Q1052 368 1100.0 365.5Q1148 363 1191.5 361.0Q1235 359 1263 359Q1274 387 1286 417Q1348 568 1400.0 655.0Q1452 742 1483 752Q1523 765 1538 765Q1544 765 1544 763Q1544 760 1530 753Q1523 749 1501.5 718.0Q1480 687 1450.0 633.5Q1420 580 1387.0 510.0Q1354 440 1324 358Q1341 358 1358.5 359.0Q1376 360 1385 361Q1396 363 1403.5 366.0Q1411 369 1415 369Q1420 369 1420 364Q1420 361 1412 354Q1395 342 1371.0 333.0Q1347 324 1311 322Q1288 256 1268.0 186.5Q1248 117 1248 58Q1248 36 1256.0 16.0Q1264 -4 1286 -4Q1312 -4 1343.0 24.5Q1374 53 1404.0 98.0Q1434 143 1454 193Q1466 193 1466 184Q1442 129 1409.5 77.0Q1377 25 1338.5 -8.5Q1300 -42 1258 -42Q1225 -42 1204.5 -18.0Q1184 6 1184 53Q1184 99 1202.5 170.0Q1221 241 1250 322Q1220 323 1176.0 325.0Q1132 327 1083.0 329.5Q1034 332 989.0 334.0Q944 336 914 337Q910 325 906.0 314.0Q902 303 899 294Q869 206 815.5 123.0Q762 40 687.5 -27.0Q613 -94 517.5 -133.5Q422 -173 308 -173ZM1072 726Q1082 728 1089.5 730.0Q1097 732 1104 734Q1122 740 1129.5 748.0Q1137 756 1137 762Q1137 774 1123 774Q1116 774 1106.0 768.0Q1096 762 1086 748Q1082 742 1078.5 736.5Q1075 731 1072 726Z" transform="translate(1090 0)"/><path d="M88 0Q77 0 61.5 5.0Q46 10 34.5 23.5Q23 37 23 64Q23 90 40.0 124.0Q57 158 70 184Q59 184 59 193Q60 196 68.0 212.0Q76 228 87.0 250.0Q98 272 108.5 292.5Q119 313 125 324Q137 346 163 346H225Q208 333 194.5 317.5Q181 302 161 261Q161 261 154.0 247.0Q147 233 136.5 211.5Q126 190 115.5 168.0Q105 146 98 131Q85 103 81.0 86.5Q77 70 77 56Q77 23 99 23Q123 23 157 62Q185 95 212.0 141.0Q239 187 263.5 236.0Q288 285 307 324Q318 346 346 346H401Q379 328 356.5 292.0Q334 256 307 200Q300 185 289.0 162.0Q278 139 269.5 113.0Q261 87 261 61Q261 26 286 26Q320 26 352.0 73.0Q384 120 415 193Q423 193 424.5 192.0Q426 191 427 184Q416 157 400.5 125.5Q385 94 365.5 65.0Q346 36 322.5 18.0Q299 0 271 0Q246 0 230.0 18.5Q214 37 214 71Q214 98 224 129Q207 99 185.0 69.0Q163 39 138.0 19.5Q113 0 88 0Z" transform="translate(2485 0)"/><path d="M131 -4Q94 -4 64.5 20.0Q35 44 35 93Q35 134 53.5 180.0Q72 226 102.5 266.5Q133 307 170.5 332.5Q208 358 246 358Q265 358 283.0 347.0Q301 336 301 309Q301 284 282.0 254.0Q263 224 228 198Q213 187 190.0 177.0Q167 167 144.0 160.5Q121 154 106 154Q101 142 96.5 122.0Q92 102 92 81Q92 56 102.0 36.0Q112 16 139 16Q172 16 200.5 35.0Q229 54 251.5 83.0Q274 112 290.0 142.0Q306 172 315 193Q327 193 327 184Q314 156 297.5 123.0Q281 90 258.5 61.5Q236 33 204.5 14.5Q173 -4 131 -4ZM113 172Q127 172 160.0 182.5Q193 193 220 216Q246 239 260.0 266.5Q274 294 274 313Q274 335 258 335Q246 335 225.0 319.0Q204 303 173 265Q154 241 137.0 213.0Q120 185 113 172Z" transform="translate(2841 0)"/><path d="M60 196Q68 213 81.0 250.5Q94 288 108.0 334.0Q122 380 129 421Q132 437 140.0 444.5Q148 452 157 452Q170 452 181.0 439.5Q192 427 192 404Q192 376 175.5 356.0Q159 336 135 318Q145 317 156.0 316.5Q167 316 180 316Q227 316 273 322Q275 316 275 313Q275 300 267.5 280.0Q260 260 252 244Q248 235 236.0 211.5Q224 188 210.0 158.5Q196 129 186.5 100.5Q177 72 177 52Q177 26 197 26Q216 26 250.0 70.5Q284 115 318 193Q330 193 330 184Q319 157 302.5 125.0Q286 93 266.0 64.5Q246 36 223.0 17.5Q200 -1 175 -1Q156 -1 137.0 14.5Q118 30 118 65Q118 96 130.0 125.5Q142 155 157.0 181.0Q172 207 184.0 227.0Q196 247 196 259Q196 277 173.5 285.0Q151 293 115 294Q97 248 88.0 226.0Q79 204 71 184Q55 184 60 196Z" transform="translate(3097 0)"/><path d="M266 528Q253 509 237.0 480.0Q221 451 207.5 424.0Q194 397 187 383H279Q279 379 275.5 370.0Q272 361 262 357H175Q163 330 147.5 292.0Q132 254 117.5 213.0Q103 172 93.5 136.5Q84 101 84 79Q84 49 92.0 34.5Q100 20 121 20Q148 20 173.0 46.5Q198 73 220.5 113.0Q243 153 260 193Q272 193 272 184Q261 157 245.0 125.0Q229 93 208.5 63.5Q188 34 162.5 15.5Q137 -3 106 -3Q64 -3 49.0 20.5Q34 44 34 81Q34 108 44.0 146.5Q54 185 68.5 226.0Q83 267 97.0 302.5Q111 338 119 357H55Q55 365 62.0 374.0Q69 383 77 383H130Q138 399 148.5 423.0Q159 447 177 476Q192 500 215.5 514.0Q239 528 266 528Z" transform="translate(3356 0)"/><path d="M276 -3Q253 -3 235.5 10.0Q218 23 218 63Q218 80 220.5 95.0Q223 110 227 127Q218 112 202.0 90.0Q186 68 166.5 47.0Q147 26 126.5 12.0Q106 -2 88 -2Q62 -2 46.0 21.5Q30 45 30 83Q30 124 49.0 171.0Q68 218 101.0 261.0Q134 304 177.0 331.0Q220 358 267 358Q290 358 311.0 350.5Q332 343 348 326Q355 319 355 310Q355 304 350.0 300.0Q345 296 337 298Q326 333 290 333Q273 333 251 322Q224 308 193.5 277.5Q163 247 136.5 208.5Q110 170 93.0 131.0Q76 92 76 60Q76 27 101 27Q123 27 146.5 48.0Q170 69 191.5 100.5Q213 132 231.0 163.0Q249 194 259 213Q274 240 287.0 258.0Q300 276 324 276Q335 276 346.0 273.0Q357 270 369 272Q339 242 316.5 201.0Q294 160 282.0 120.5Q270 81 270 54Q270 24 290 24Q306 24 324.5 42.0Q343 60 360.5 87.5Q378 115 393.0 143.5Q408 172 417 193Q422 193 425.5 192.0Q429 191 429 184Q428 180 425.5 175.5Q423 171 418 160Q410 144 396.0 117.0Q382 90 363.0 62.5Q344 35 322.0 16.0Q300 -3 276 -3Z" transform="translate(3557 0)"/></g></svg>
+      <span class="name">Carlos Fabrizio Huerta Orellana</span>
+      Astrofotógrafo · Tarapacá, Chile
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ GALERÍA MASONRY ═══════════════ -->
+<main id="gallery-start">
+  <h2 class="sr-only" style="position:absolute;left:-9999px;">Galería de fotografías</h2>
+
+      <!-- ── Capítulo I: El cielo en el desierto ── -->
+      <section class="chapter-band" id="cap-I" data-cap="I" aria-labelledby="cap-I-title">
+        <div class="numeral" aria-hidden="true">I</div>
+        <h3 id="cap-I-title">El cielo en el desierto</h3>
+        <div class="count">26 fotografías</div>
+      </section>
+
+      <div class="masonry" data-masonry>
+        <figure class="tile">
+          <img src="assets/cap1-01.jpg" width="1440" height="768" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="eager" decoding="async" fetchpriority="high">
+          <figcaption aria-hidden="true">01</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-02.jpg" width="810" height="1440" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="eager" decoding="async" fetchpriority="high">
+          <figcaption aria-hidden="true">02</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-03.jpg" width="1440" height="593" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="eager" decoding="async" fetchpriority="high">
+          <figcaption aria-hidden="true">03</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-04.jpg" width="960" height="1440" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">04</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-05.jpg" width="1440" height="960" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">05</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-06.jpg" width="960" height="1440" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">06</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-07.jpg" width="1151" height="1440" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">07</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-08.jpg" width="1364" height="908" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">08</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-09.jpg" width="960" height="1440" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">09</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-10.jpg" width="1440" height="961" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">10</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-11.jpg" width="960" height="1440" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">11</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-12.jpg" width="960" height="1440" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">12</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-13.jpg" width="1440" height="651" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">13</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-14.jpg" width="1440" height="805" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">14</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-15.jpg" width="1440" height="960" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">15</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-16.jpg" width="1080" height="1440" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">16</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-17.jpg" width="1440" height="960" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">17</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-18.jpg" width="960" height="1440" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">18</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-19.jpg" width="1440" height="709" alt="Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">19</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-20.jpg" width="757" height="403" alt="Arco panorámico de la Vía Láctea sobre lomajes del desierto al anochecer"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">20</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-21.jpg" width="1440" height="1363" alt="Luna llena en primer plano, cráteres y mares visibles sobre cielo negro"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">21</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-22.jpg" width="810" height="1440" alt="Árbol seco recortado contra la banda luminosa de la Vía Láctea"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">22</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-23.jpg" width="1080" height="1440" alt="Señal de carretera verde en el desierto bajo el cielo estrellado y la galaxia"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">23</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-24.jpg" width="1440" height="882" alt="Vegetación árida del desierto iluminada bajo un cielo densamente estrellado"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">24</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-25.jpg" width="810" height="1440" alt="Luna creciente delgada sobre cielo azul oscuro"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">25</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap1-26.jpg" width="1440" height="960" alt="Salar de suelo agrietado bajo la Vía Láctea con montañas al fondo"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">26</figcaption>
+        </figure>
+      </div>
+
+      <!-- ── Capítulo II: Quienes miran ── -->
+      <section class="chapter-band" id="cap-II" data-cap="II" aria-labelledby="cap-II-title">
+        <div class="numeral" aria-hidden="true">II</div>
+        <h3 id="cap-II-title">Quienes miran</h3>
+        <div class="count">24 fotografías</div>
+      </section>
+
+      <div class="masonry" data-masonry>
+        <figure class="tile">
+          <img src="assets/cap2-01.jpg" width="1440" height="849" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">01</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-02.jpg" width="1152" height="1440" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">02</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-03.jpg" width="1059" height="1440" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">03</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-04.jpg" width="960" height="1440" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">04</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-05.jpg" width="960" height="1440" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">05</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-06.jpg" width="1152" height="1440" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">06</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-07.jpg" width="960" height="1440" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">07</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-08.jpg" width="960" height="1440" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">08</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-09.jpg" width="960" height="1440" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">09</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-10.jpg" width="1440" height="1010" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">10</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-11.jpg" width="810" height="1440" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">11</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-12.jpg" width="1152" height="1440" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">12</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-13.jpg" width="960" height="1440" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">13</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-14.jpg" width="960" height="1440" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">14</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-15.jpg" width="960" height="1440" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">15</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-16.jpg" width="960" height="1440" alt="Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">16</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-17.jpg" width="1152" height="1440" alt="Dos personas de pie en el campo, mirando la Vía Láctea con un resplandor en el horizonte"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">17</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-18.jpg" width="1440" height="960" alt="Silueta solitaria bajo el arco de la Vía Láctea sobre el desierto plano"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">18</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-19.jpg" width="1152" height="1440" alt="Persona de pie con los brazos alzados sosteniendo una luz bajo la galaxia"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">19</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-20.jpg" width="1152" height="1440" alt="Persona posada sobre la cresta de una duna bajo la Vía Láctea"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">20</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-21.jpg" width="960" height="1440" alt="Pareja abrazada, sentada bajo la banda luminosa de la galaxia"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">21</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-22.jpg" width="1440" height="960" alt="Panorámica del arco galáctico con una pequeña silueta humana al centro"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">22</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-23.jpg" width="1440" height="960" alt="Dos personas sentadas contemplando la Vía Láctea"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">23</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap2-24.jpg" width="1440" height="960" alt="Panorámica 360° del arco completo de la Vía Láctea sobre dunas, con una silueta que alza una linterna"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">24</figcaption>
+        </figure>
+      </div>
+
+      <!-- ── Capítulo III: Lo que el tiempo dejó ── -->
+      <section class="chapter-band" id="cap-III" data-cap="III" aria-labelledby="cap-III-title">
+        <div class="numeral" aria-hidden="true">III</div>
+        <h3 id="cap-III-title">Lo que el tiempo dejó</h3>
+        <div class="count">9 fotografías</div>
+      </section>
+
+      <div class="masonry" data-masonry>
+        <figure class="tile">
+          <img src="assets/cap3-01.jpg" width="1035" height="1440" alt="Fotografía nocturna de una construcción o ruina bajo el cielo estrellado, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">01</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap3-02.jpg" width="1440" height="960" alt="Fotografía nocturna de una construcción o ruina bajo el cielo estrellado, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">02</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap3-03.jpg" width="931" height="1396" alt="Fotografía nocturna de una construcción o ruina bajo el cielo estrellado, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">03</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap3-04.jpg" width="929" height="1394" alt="Fotografía nocturna de una construcción o ruina bajo el cielo estrellado, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">04</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap3-05.jpg" width="931" height="1398" alt="Fotografía nocturna de una construcción o ruina bajo el cielo estrellado, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">05</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap3-06.jpg" width="929" height="1394" alt="Fotografía nocturna de una construcción o ruina bajo el cielo estrellado, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">06</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap3-07.jpg" width="931" height="1398" alt="Fotografía nocturna de una construcción o ruina bajo el cielo estrellado, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">07</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap3-08.jpg" width="1079" height="1440" alt="Estructuras de adobe y un árbol desnudo bajo la Vía Láctea en el desierto"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">08</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap3-09.jpg" width="960" height="1440" alt="Edificio colonial de arcos y farol, iluminado bajo la Vía Láctea en un pueblo del norte"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">09</figcaption>
+        </figure>
+      </div>
+
+      <!-- ── Capítulo IV: Oasis y horizontes de agua ── -->
+      <section class="chapter-band" id="cap-IV" data-cap="IV" aria-labelledby="cap-IV-title">
+        <div class="numeral" aria-hidden="true">IV</div>
+        <h3 id="cap-IV-title">Oasis y horizontes de agua</h3>
+        <div class="count">7 fotografías</div>
+      </section>
+
+      <div class="masonry" data-masonry>
+        <figure class="tile">
+          <img src="assets/cap4-01.jpg" width="960" height="1440" alt="Fotografía nocturna de un oasis o cuerpo de agua bajo el cielo estrellado, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">01</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap4-02.jpg" width="960" height="1440" alt="Fotografía nocturna de un oasis o cuerpo de agua bajo el cielo estrellado, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">02</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap4-03.jpg" width="945" height="1440" alt="Fotografía nocturna de un oasis o cuerpo de agua bajo el cielo estrellado, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">03</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap4-04.jpg" width="1152" height="1440" alt="Fotografía nocturna de un oasis o cuerpo de agua bajo el cielo estrellado, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">04</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap4-05.jpg" width="960" height="1440" alt="Fotografía nocturna de un oasis o cuerpo de agua bajo el cielo estrellado, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">05</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap4-06.jpg" width="1152" height="1440" alt="Fotografía nocturna de un oasis o cuerpo de agua bajo el cielo estrellado, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">06</figcaption>
+        </figure>
+        <figure class="tile">
+          <img src="assets/cap4-07.jpg" width="1440" height="960" alt="Fotografía nocturna de un oasis o cuerpo de agua bajo el cielo estrellado, Tarapacá"
+               loading="lazy" decoding="async">
+          <figcaption aria-hidden="true">07</figcaption>
+        </figure>
+      </div>
+
+<!-- ═══════════════ EL PROYECTO ═══════════════ -->
+<section class="talleres" id="proyecto" aria-labelledby="proyecto-title">
+  <div class="talleres-inner">
+    <p class="kicker">Un cielo que contar</p>
+    <h2 id="proyecto-title">El proyecto</h2>
+    <p class="lead">«Cuando el cielo sostiene mis manos» es un proyecto de astrofotografía nacido en la Región de Tarapacá: mostrar el cielo más oscuro del planeta como patrimonio, herramienta terapéutica y memoria. Hoy busca apoyo para seguir creciendo.</p>
+
+    <div class="btn-row" style="margin-top:2.4rem;">
+      <a class="btn btn-primary" href="https://wa.me/56957555679?text=Hola%20Carlos%2C%20quiero%20conversar%20sobre%20tu%20proyecto" target="_blank" rel="noopener">Conversemos sobre el proyecto</a>
+      <a class="btn" href="mailto:Huerta.o.carlos@gmail.com?subject=Dossier%20del%20proyecto%20%E2%80%94%20Cuando%20el%20cielo%20sostiene%20mis%20manos">Solicitar dossier del proyecto</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ═══════════════ CIERRE ═══════════════ -->
+<section class="slide closing" aria-labelledby="gracias-title">
+  <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;">
+    <h2 id="gracias-title">Gracias por mirar el cielo conmigo</h2>
+    <p class="tagline">Proyecto de astrofotografía · Tarapacá, Chile</p>
+
+    <div class="btn-row" role="group" aria-label="Medios de contacto">
+      <a class="btn btn-primary" href="https://wa.me/56957555679?text=Hola%20Carlos%2C%20conozco%20tu%20proyecto%20y%20quiero%20apoyarlo%20o%20colaborar" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1a13.7 13.7 0 0 1-6-5.2c-.5-.9-.8-1.8-.8-2.6 0-1 .5-1.8 1.1-2.2.2-.1.4-.2.6-.2h.5c.2 0 .4 0 .6.4l.8 2c.1.2.1.4 0 .6l-.4.5c-.1.2-.3.3-.1.6.4.7 1 1.4 1.7 2 .8.6 1.4.9 1.7 1 .2.1.4 0 .5-.1l.7-.8c.2-.2.4-.2.6-.1l2 .9c.2.1.4.2.4.3.1.3.1.9-.2 1.5Z"/></svg>
+        WhatsApp
+      </a>
+      <a class="btn" href="mailto:Huerta.o.carlos@gmail.com">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm9 7.4L4.4 7H19.6L12 12.4ZM4 8.7V17h16V8.7l-8 5.9-8-5.9Z"/></svg>
+        Correo
+      </a>
+      <a class="btn" href="https://instagram.com/carloshuertao" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c2.7 0 3 .01 4.1.06 1 .05 1.7.2 2.3.44.6.25 1.1.57 1.6 1.06.5.5.8 1 1.06 1.6.24.6.4 1.3.44 2.3.05 1 .06 1.4.06 4.05s-.01 3-.06 4.1c-.05 1-.2 1.7-.44 2.3a4.3 4.3 0 0 1-1.06 1.6c-.5.5-1 .8-1.6 1.06-.6.24-1.3.4-2.3.44-1 .05-1.4.06-4.1.06s-3-.01-4.1-.06c-1-.05-1.7-.2-2.3-.44a4.3 4.3 0 0 1-1.6-1.06 4.3 4.3 0 0 1-1.06-1.6c-.24-.6-.4-1.3-.44-2.3C2.01 15 2 14.65 2 12s.01-3 .06-4.1c.05-1 .2-1.7.44-2.3A4.3 4.3 0 0 1 3.56 4a4.3 4.3 0 0 1 1.6-1.06c.6-.24 1.3-.4 2.3-.44C8.5 2.01 8.86 2 11.5 2H12Zm0 1.8c-2.65 0-2.96.01-4 .06-.96.04-1.48.2-1.83.34-.46.18-.8.4-1.14.75-.35.34-.57.68-.75 1.14-.14.35-.3.87-.34 1.83-.05 1.04-.06 1.35-.06 4s.01 2.96.06 4c.04.96.2 1.48.34 1.83.18.46.4.8.75 1.14.34.35.68.57 1.14.75.35.14.87.3 1.83.34 1.04.05 1.35.06 4 .06s2.96-.01 4-.06c.96-.04 1.48-.2 1.83-.34.46-.18.8-.4 1.14-.75.35-.34.57-.68.75-1.14.14-.35.3-.87.34-1.83.05-1.04.06-1.35.06-4s-.01-2.96-.06-4c-.04-.96-.2-1.48-.34-1.83a3.1 3.1 0 0 0-.75-1.14 3.1 3.1 0 0 0-1.14-.75c-.35-.14-.87-.3-1.83-.34-1.04-.05-1.35-.06-4-.06Zm0 3.06a4.34 4.34 0 1 1 0 8.68 4.34 4.34 0 0 1 0-8.68Zm0 1.8a2.54 2.54 0 1 0 0 5.08 2.54 2.54 0 0 0 0-5.08Zm4.55-2.33a1.01 1.01 0 1 1 0 2.03 1.01 1.01 0 0 1 0-2.03Z"/></svg>
+        @carloshuertao
+      </a>
+    </div>
+
+    <div class="foot">Cuando el cielo sostiene mis manos — Portafolio de Astrofotografía</div>
+  </div>
+</section>
+
+<!-- ═══════════════ WHATSAPP FLOTANTE ═══════════════ -->
+<a id="wa-fab"
+   href="https://wa.me/56957555679?text=Hola%20Carlos%2C%20vi%20tu%20portafolio%20web%20y%20quiero%20saber%20m%C3%A1s%20sobre%20el%20proyecto"
+   target="_blank" rel="noopener"
+   aria-label="Escríbeme por WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1a13.7 13.7 0 0 1-6-5.2c-.5-.9-.8-1.8-.8-2.6 0-1 .5-1.8 1.1-2.2.2-.1.4-.2.6-.2h.5c.2 0 .4 0 .6.4l.8 2c.1.2.1.4 0 .6l-.4.5c-.1.2-.3.3-.1.6.4.7 1 1.4 1.7 2 .8.6 1.4.9 1.7 1 .2.1.4 0 .5-.1l.7-.8c.2-.2.4-.2.6-.1l2 .9c.2.1.4.2.4.3.1.3.1.9-.2 1.5Z"/></svg>
+  <span class="wa-label" aria-hidden="true">Escríbeme</span>
+</a>
+
+<script>
+/* ================================================================
+   MASONRY LAYOUT — CSS Grid + span calculado por aspecto real.
+   · Sin recortes: cada ficha conserva su proporción nativa.
+   · Sin librerías: ~40 líneas de vanilla JS.
+   · Cero layout shift: los atributos width/height del <img> ya
+     definen el aspect-ratio antes de que el JPEG descargue.
+   ================================================================ */
+(function () {
+  'use strict';
+  const ROW = 8;                       // px de grid-auto-rows (debe coincidir con --row-unit)
+  const css = getComputedStyle(document.documentElement);
+  const GAP = parseFloat(css.getPropertyValue('--gap')) || 14;
+
+  /** Asigna a cada .tile el grid-row-end: span N según su alto real. */
+  function layout(grid) {
+    const tiles = grid.children;
+    for (let i = 0; i < tiles.length; i++) {
+      const t = tiles[i];
+      const h = t.firstElementChild
+        ? t.firstElementChild.getBoundingClientRect().height
+        : t.getBoundingClientRect().height;
+      // alto de imagen + margen inferior, redondeado a unidades de fila
+      t.style.setProperty('--span', Math.ceil((h + GAP) / ROW));
+    }
+  }
+
+  const grids = Array.from(document.querySelectorAll('[data-masonry]'));
+  const layoutAll = () => grids.forEach(layout);
+
+  /* Recalcular cuando cambia el ancho de cada grid (responsive real). */
+  if ('ResizeObserver' in window) {
+    const ro = new ResizeObserver(entries => {
+      // rAF: evita medir durante el propio resize (evita bucles)
+      window.requestAnimationFrame(layoutAll);
+    });
+    grids.forEach(g => ro.observe(g));
+  } else {
+    window.addEventListener('resize', layoutAll);
+  }
+
+  /* Por si algún JPEG llega con dimensiones distintas a las declaradas. */
+  document.querySelectorAll('.tile img').forEach(img => {
+    img.addEventListener('load', () => {
+      const g = img.closest('[data-masonry]');
+      if (g) layout(g);
+    });
+  });
+
+  layoutAll();
+
+  /* Aparición progresiva de las fichas al entrar en viewport. */
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(es => {
+      es.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+          io.unobserve(e.target);        // una sola vez: no re-animar al scrollear
+        }
+      });
+    }, { threshold: .1, rootMargin: '0px 0px 120px 0px' });
+    document.querySelectorAll('.tile').forEach(t => io.observe(t));
+  } else {
+    document.querySelectorAll('.tile').forEach(t => t.classList.add('in-view'));
+  }
+})();
+
+/* ================================================================
+   CHROME FIJO: starfield, observers, progreso (igual que antes)
+   ================================================================ */
+const starfield = document.getElementById('starfield');
+for (let i = 0; i < 90; i++) {
+  const s = document.createElement('span');
+  const size = Math.random() * 1.6 + .5;
+  s.style.width = size + 'px';
+  s.style.height = size + 'px';
+  s.style.left = Math.random() * 100 + '%';
+  s.style.top = Math.random() * 100 + '%';
+  s.style.opacity = (Math.random() * .5 + .15).toFixed(2);
+  starfield.appendChild(s);
+}
+
+const slideObserver = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in-view'); });
+}, { threshold: .35 });
+document.querySelectorAll('.slide').forEach(s => slideObserver.observe(s));
+
+const paraObserver = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in-view'); });
+}, { threshold: .5 });
+document.querySelectorAll('.words p, .words .signature').forEach(p => paraObserver.observe(p));
+
+const navLinks = document.querySelectorAll('#chapternav a');
+const chapObserver = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      const cap = e.target.dataset.cap;
+      navLinks.forEach(a => a.classList.toggle('active', a.dataset.cap === cap));
+    }
+  });
+}, { threshold: .2 });
+document.querySelectorAll('section[data-cap]').forEach(s => chapObserver.observe(s));
+
+const wordmark = document.getElementById('wordmark');
+const chapternav = document.getElementById('chapternav');
+const progress = document.getElementById('progress');
+let ticking = false;
+function onScroll() {
+  if (!ticking) {
+    window.requestAnimationFrame(() => {
+      const scrollTop = window.scrollY;
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      progress.style.width = (docH > 0 ? (scrollTop / docH) * 100 : 0) + '%';
+      const past = scrollTop > window.innerHeight * .6;
+      wordmark.classList.toggle('show', past);
+      chapternav.classList.toggle('show', past);
+      ticking = false;
+    });
+    ticking = true;
+  }
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+</script>
+</body>
+</html>
