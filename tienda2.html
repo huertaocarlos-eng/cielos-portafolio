@@ -1,0 +1,1533 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tienda de cuadros (galería) — Cielos de Tarapacá | Carlos Huerta Orellana, Astrofotógrafo</title>
+<meta name="description" content="Cuadros fotográficos de astrofotografía de Carlos Huerta Orellana. Edición Cielos de Tarapacá. Simula tu cuadro enmarcado en tiempo real y arma tu pedido.">
+<meta property="og:title" content="Cielos de Tarapacá — Cuadros de astrofotografía de Carlos Huerta Orellana">
+<meta property="og:description" content="Que el cielo sostenga mis manos. Galería-tienda con simulador de marco en tiempo real.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ================================================================
+   VERSIÓN B — "GALERÍA CLARA" (inspirada en yerkobustillos.cl)
+   Crema + serif display + tarjetas blancas + acento cobre.
+   ================================================================ */
+:root{
+  --bg:#f6f2e9;
+  --card:#fffdf8;
+  --ink:#181c23;
+  --muted:#5d6572;
+  --line:rgba(24,28,35,.14);
+  --accent:#b06f2e;
+  --accent-soft:#8a5620;
+  --night:#20263a;
+  --wa:#25d366;
+  --serif:'Fraunces', Georgia, serif;
+  --sans:'Archivo', -apple-system, sans-serif;
+  --gap:14px;
+  --row-unit:8px;
+  --tap:48px;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+html{background:var(--bg); scroll-behavior:smooth;}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-size:17px;line-height:1.6;
+  overflow-x:hidden;
+}
+::selection{background:var(--accent);color:#fff;}
+a{color:inherit;}
+img{display:block;max-width:100%;}
+figure{margin:0;}
+h1,h2,h3{font-family:var(--serif);font-weight:500;color:var(--ink);}
+button{font-family:var(--sans);}
+
+/* ---------- accesibilidad ---------- */
+.skip-link{
+  position:absolute;left:-9999px;top:0;z-index:100;
+  background:var(--ink);color:var(--bg);
+  padding:.8rem 1.3rem;border-radius:0 0 10px 0;font-weight:600;text-decoration:none;
+}
+.skip-link:focus{left:0;}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px;}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+[data-motion="off"] *,[data-motion="off"] *::before,[data-motion="off"] *::after{
+  transition:none !important;animation:none !important;
+}
+@media (prefers-reduced-motion: reduce){
+  html:not([data-motion="on"]) *,html:not([data-motion="on"]) *::before,html:not([data-motion="on"]) *::after{
+    transition:none !important;animation:none !important;
+  }
+  html:not([data-motion="on"]){scroll-behavior:auto;}
+}
+
+/* ---------- barra superior ---------- */
+#topbar{
+  position:fixed;top:0;left:0;right:0;z-index:70;
+  display:flex;align-items:center;gap:.9rem;
+  padding:.55rem clamp(.8rem,3vw,1.6rem);
+  background:rgba(255,253,248,.92);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+#topbar .brand{
+  font-family:var(--serif);font-size:1.05rem;text-decoration:none;
+  white-space:nowrap;color:var(--ink);
+  display:inline-flex;align-items:center;min-height:var(--tap);
+}
+#topbar .brand svg.firma-brand{height:32px;width:auto;display:block;color:var(--ink);margin-right:.35rem;}
+#topbar .brand svg.firma-brand path{fill:currentColor;}
+#topnav{flex:1;display:flex;gap:.3rem;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+#topnav::-webkit-scrollbar{display:none;}
+#topnav a{
+  display:inline-flex;align-items:center;min-height:var(--tap);
+  padding:.3rem .85rem;border-radius:999px;
+  font-size:.9rem;font-weight:500;letter-spacing:.03em;text-transform:uppercase;
+  text-decoration:none;white-space:nowrap;
+  color:var(--muted);border:1px solid transparent;
+}
+#topnav a:hover{color:var(--ink);border-color:var(--line);}
+#topnav a.active{color:var(--accent-soft);border-color:var(--accent);}
+#motion-toggle{
+  min-height:var(--tap);min-width:var(--tap);
+  display:inline-flex;align-items:center;gap:.4rem;
+  background:transparent;border:1px solid var(--line);
+  color:var(--muted);border-radius:999px;padding:.3rem .8rem;font-size:.8rem;cursor:pointer;white-space:nowrap;
+}
+#motion-toggle:hover{color:var(--ink);border-color:var(--accent);}
+
+/* ---------- botón pedido flotante ---------- */
+#order-fab{
+  position:fixed;right:1.2rem;bottom:1.2rem;z-index:75;
+  min-width:64px;min-height:64px;border-radius:32px;border:none;
+  display:flex;align-items:center;justify-content:center;gap:.55rem;
+  background:var(--ink);color:var(--bg);font-weight:600;font-size:1rem;
+  cursor:pointer;padding:0 1.2rem;
+  box-shadow:0 12px 30px -8px rgba(24,28,35,.45);
+}
+#order-fab .count{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:26px;height:26px;border-radius:13px;
+  background:var(--accent);color:#fff;font-size:.85rem;
+}
+#order-fab[hidden]{display:none;}
+#overlay{position:fixed;inset:0;z-index:85;background:rgba(30,26,18,.4);opacity:0;pointer-events:none;transition:opacity .35s ease;}
+#overlay.show{opacity:1;pointer-events:auto;}
+#order-panel{
+  position:fixed;top:0;right:0;bottom:0;z-index:90;width:min(440px,100%);
+  background:var(--card);border-left:1px solid var(--line);
+  transform:translateX(100%);transition:transform .4s cubic-bezier(.16,.6,.2,1);
+  display:flex;flex-direction:column;
+}
+#order-panel.open{transform:none;}
+#order-panel .head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.1rem 1.2rem;border-bottom:1px solid var(--line);}
+#order-panel .head h2{margin:0;font-size:1.3rem;}
+#order-list{flex:1;overflow-y:auto;padding:1rem 1.2rem;}
+.order-empty{color:var(--muted);text-align:center;padding:3rem 1rem;font-size:.95rem;}
+.order-item{
+  display:flex;gap:.9rem;align-items:flex-start;
+  padding:.9rem;border-radius:var(--radius);
+  background:#fff;border:1px solid var(--line);margin-bottom:.9rem;
+}
+.order-item img{width:64px;height:64px;object-fit:cover;border-radius:8px;}
+.order-item .meta{flex:1;font-size:.86rem;color:var(--muted);}
+.order-item .meta .t{font-family:var(--serif);font-size:1.05rem;color:var(--ink);margin-bottom:.15rem;font-weight:600;}
+.order-item .ctrl{display:flex;align-items:center;gap:.4rem;margin-top:.5rem;}
+.order-item .ctrl button{
+  min-width:var(--tap);min-height:40px;border-radius:10px;cursor:pointer;
+  background:var(--bg);border:1px solid var(--line);color:var(--ink);font-size:1.05rem;
+}
+.order-item .ctrl button:hover{border-color:var(--accent);color:var(--accent-soft);}
+.order-item .qty{min-width:2ch;text-align:center;font-weight:600;color:var(--ink);}
+.order-item .rm{border:none;background:none;color:var(--muted);cursor:pointer;min-width:var(--tap);min-height:var(--tap);font-size:.8rem;text-decoration:underline;}
+.order-item .rm:hover{color:#b03a3a;}
+#order-panel .foot{padding:1.1rem 1.2rem;border-top:1px solid var(--line);}
+.totals{margin:0 0 .9rem;font-size:.95rem;}
+.totals .trow{display:flex;justify-content:space-between;gap:1rem;padding:.3rem 0;color:var(--muted);}
+.totals .trow span:last-child{font-weight:600;color:var(--ink);}
+.totals .trow.big{font-size:1.1rem;padding:.55rem 0 .4rem;border-top:1px dashed var(--line);margin-top:.35rem;}
+.totals .trow.big .n{color:var(--accent-soft);font-family:var(--serif);font-size:1.5rem;}
+.totals .trow.dep{color:var(--accent-soft);}
+.totals .trow.dep span:last-child{color:var(--accent-soft);}
+.ship-note{font-size:.78rem;color:var(--muted);margin:0 0 .9rem;line-height:1.55;}
+
+/* ---------- botones ---------- */
+.btn{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.6rem;
+  min-height:56px;padding:.9rem 1.8rem;border-radius:999px;
+  border:1.5px solid var(--line);background:transparent;
+  color:var(--ink);font-size:1rem;font-weight:600;letter-spacing:.02em;
+  text-decoration:none;cursor:pointer;
+  transition:transform .3s ease,border-color .3s ease,color .3s ease,background .3s ease,box-shadow .3s ease;
+}
+.btn:hover{transform:translateY(-2px);border-color:var(--ink);}
+.btn-primary{background:var(--ink);border-color:var(--ink);color:var(--bg);}
+.btn-primary:hover{background:#28303c;border-color:#28303c;color:#fff;box-shadow:0 12px 30px -12px rgba(24,28,35,.5);}
+.btn-wa{background:var(--wa);border-color:var(--wa);color:#062b16;font-weight:700;}
+.btn svg{width:19px;height:19px;flex:none;fill:currentColor;}
+
+/* ---------- HÉROE B (colage tipo "Bienvenidos") ---------- */
+.hero{display:none;} /* desactiva el héroe oscuro de la versión A */
+.hero2{padding:7.5rem 1.4rem 1rem;max-width:1200px;margin:0 auto;text-align:center;}
+.hero2 .welcome{
+  font-size:.85rem;letter-spacing:.32em;text-transform:uppercase;color:var(--accent-soft);margin:0 0 1rem;font-weight:600;
+}
+.hero2 h1{
+  font-size:clamp(2.6rem,8.5vw,5.4rem);line-height:1.02;margin:0 0 1.2rem;font-weight:600;
+}
+.hero2 h1 em{font-style:italic;font-weight:500;color:var(--accent-soft);}
+.hero2 .sub{max-width:620px;margin:0 auto 1.6rem;color:var(--muted);font-size:1.05rem;line-height:1.7;}
+.hero2 .author{font-size:.9rem;color:var(--muted);margin:0 0 1.6rem;}
+.hero2 .author b{color:var(--ink);font-weight:600;}
+.hero2 .btn-row{display:flex;flex-wrap:wrap;gap:.9rem;justify-content:center;margin:0 0 3.4rem;}
+.hero2-collage{
+  display:grid;grid-template-columns:1.35fr 1fr;grid-template-rows:230px 230px;
+  gap:14px;max-width:980px;margin:0 auto;
+}
+.hero2-collage figure{
+  background:#fff;padding:10px;border:1px solid var(--line);
+  box-shadow:0 18px 44px -22px rgba(24,28,35,.4);
+}
+.hero2-collage figure:first-child{grid-row:1 / span 2;}
+.hero2-collage img{width:100%;height:100%;object-fit:cover;}
+@media (max-width:760px){
+  .hero2-collage{grid-template-columns:1fr;grid-template-rows:repeat(3,220px);}
+  .hero2-collage figure:first-child{grid-row:auto;}
+}
+
+/* ---------- secciones ---------- */
+section{padding:5rem clamp(1rem,4vw,2.4rem) 2.4rem;max-width:1500px;margin:0 auto;scroll-margin-top:76px;}
+.kicker{
+  font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent-soft);
+  margin:0 0 .6rem;text-align:center;font-weight:700;
+}
+section > h2{
+  font-size:clamp(2rem,5.4vw,3.4rem);text-align:center;margin:0 0 .9rem;font-weight:600;
+}
+.lead{max-width:660px;margin:0 auto 2.6rem;text-align:center;color:var(--muted);font-size:1.02rem;line-height:1.75;}
+
+#como .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:1.1rem;max-width:1000px;margin:0 auto;}
+.step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:1.6rem 1.4rem;text-align:center;box-shadow:0 10px 28px -20px rgba(24,28,35,.35);}
+.step .num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:52px;height:52px;border-radius:50%;margin-bottom:.9rem;
+  font-family:var(--serif);font-size:1.4rem;color:var(--accent-soft);
+  border:1.5px solid var(--accent);
+}
+.step h3{margin:0 0 .5rem;font-size:1.25rem;}
+.step p{margin:0;font-size:.93rem;color:var(--muted);line-height:1.65;}
+
+/* ---------- filtros y rejillas ---------- */
+.filters{display:flex;gap:.55rem;justify-content:center;flex-wrap:wrap;max-width:1000px;margin:0 auto 2.4rem;padding:0 .2rem;}
+.chip{
+  min-height:var(--tap);padding:.5rem 1.2rem;border-radius:999px;cursor:pointer;
+  font-size:.88rem;font-weight:600;letter-spacing:.02em;text-transform:none;
+  background:var(--card);border:1.5px solid var(--line);color:var(--muted);
+}
+.chip:hover{border-color:var(--ink);color:var(--ink);}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg);}
+
+.masonry{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));
+  grid-auto-rows:var(--row-unit);column-gap:var(--gap);row-gap:0;
+  max-width:1600px;margin:0 auto;
+}
+@media (min-width:1400px){.masonry{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));}}
+.tile{
+  grid-row-end:span var(--span,42);margin-bottom:var(--gap);
+  position:relative;background:#fff;border:1px solid var(--line);
+  box-shadow:0 14px 34px -24px rgba(24,28,35,.45);
+  padding:10px 10px 0;
+}
+.tile img{width:100%;height:auto;}
+.tile figcaption{
+  position:absolute;top:.9rem;right:.9rem;font-size:.72rem;letter-spacing:.08em;
+  color:var(--muted);background:rgba(255,255,255,.88);backdrop-filter:blur(6px);
+  padding:.3rem .6rem;border-radius:999px;border:1px solid var(--line);
+}
+.tile .frame-btn{
+  margin:.6rem 0 .65rem;width:100%;
+  min-height:var(--tap);border-radius:9px;border:1.5px solid var(--line);
+  background:var(--card);color:var(--ink);
+  font-size:.92rem;font-weight:600;cursor:pointer;
+}
+.tile .frame-btn:hover{border-color:var(--accent);color:var(--accent-soft);background:#fbf4e9;}
+.tile[hidden],.shop-card[hidden]{display:none;}
+
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:1.3rem;max-width:1600px;margin:0 auto;}
+.shop-card{
+  display:flex;flex-direction:column;background:var(--card);
+  border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+  box-shadow:0 14px 34px -24px rgba(24,28,35,.4);
+  transition:border-color .35s ease,transform .35s ease;
+}
+.shop-card:hover{border-color:var(--accent);transform:translateY(-3px);}
+.shop-card .ph{position:relative;background:#f1ece1;padding:12px;}
+.shop-card .ph img{width:100%;height:236px;object-fit:cover;box-shadow:0 4px 14px -6px rgba(0,0,0,.35);}
+.shop-card .ed{
+  position:absolute;top:.9rem;left:.9rem;font-size:.7rem;letter-spacing:.1em;font-weight:600;
+  background:rgba(255,255,255,.92);border:1px solid var(--line);color:var(--accent-soft);
+  padding:.28rem .65rem;border-radius:999px;
+}
+.shop-card .body{padding:1.1rem 1.15rem 1.25rem;display:flex;flex-direction:column;flex:1;}
+.shop-card h3{margin:0 0 .3rem;font-size:1.2rem;}
+.shop-card .desc{
+  font-size:.85rem;color:var(--muted);margin:0 0 .9rem;flex:1;line-height:1.55;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.shop-card .from{font-size:.9rem;color:var(--muted);margin:0 0 .8rem;}
+.shop-card .from b{font-family:var(--serif);font-size:1.3rem;color:var(--accent-soft);font-weight:600;}
+.shop-card .btn{width:100%;}
+
+/* ---------- simulador ---------- */
+#simulador{max-width:1300px;}
+.sim-wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:1.6rem;align-items:start;}
+@media (max-width:980px){.sim-wrap{grid-template-columns:1fr;}}
+.wall-scene{
+  position:sticky;top:84px;border-radius:var(--radius);overflow:hidden;
+  border:1px solid var(--line);box-shadow:0 20px 44px -30px rgba(24,28,35,.5);
+  min-height:420px;height:min(72vh,600px);
+  display:flex;align-items:center;justify-content:center;
+  padding:28px 36px 56px;
+  background:#efe9df;transition:background-color .5s ease;
+}
+.wall-scene::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 6%, rgba(255,255,255,.07), rgba(0,0,0,.16) 82%);
+}
+.wall-scene[data-dark="1"]::before{
+  background:radial-gradient(120% 90% at 50% 6%, rgba(255,255,255,.05), rgba(0,0,0,.28) 82%);
+}
+.artwork{position:relative;z-index:1;}
+.artwork .frame{
+  padding:var(--fw,10px);background:var(--frame-bg,#151619);border-radius:2px;
+  box-shadow:0 22px 40px -18px rgba(0,0,0,.55),0 6px 14px -6px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.22),inset 0 -2px 3px rgba(0,0,0,.35);
+}
+.artwork .opening{position:relative;overflow:hidden;background:#000;box-shadow:inset 0 2px 8px rgba(0,0,0,.6);}
+.artwork .opening img{width:100%;height:100%;object-fit:cover;display:block;}
+.wall-note{position:absolute;left:0;right:0;bottom:.45rem;z-index:2;text-align:center;font-size:.75rem;color:rgba(10,14,20,.78);}
+.wall-scene[data-dark="1"] .wall-note{color:rgba(241,236,224,.8);}
+.sim-panel{display:flex;flex-direction:column;gap:1.4rem;}
+.field > .label{
+  display:flex;justify-content:space-between;align-items:baseline;gap:.6rem;
+  font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-soft);
+  margin:0 0 .55rem;font-weight:700;
+}
+.field .hint{font-size:.8rem;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:400;}
+.opt-row{display:flex;flex-wrap:wrap;gap:.55rem;}
+.opt{
+  min-height:var(--tap);min-width:var(--tap);padding:.55rem 1.05rem;border-radius:12px;
+  background:var(--card);border:1.5px solid var(--line);
+  color:var(--ink);font-size:.92rem;cursor:pointer;
+  display:inline-flex;align-items:center;gap:.5rem;
+}
+.opt:hover{border-color:var(--accent);}
+.opt[aria-pressed="true"]{background:#fbf1e2;border-color:var(--accent);color:var(--ink);font-weight:600;}
+.opt .sub{font-size:.8rem;color:var(--muted);}
+.opt[aria-pressed="true"] .sub{color:var(--accent-soft);}
+.swatch{width:26px;height:26px;border-radius:6px;border:1px solid rgba(24,28,35,.25);}
+.price-box{
+  background:var(--card);border:1.5px solid var(--accent);
+  border-radius:var(--radius);padding:1.2rem 1.3rem;
+  box-shadow:0 14px 30px -24px rgba(176,111,46,.6);
+}
+.price-box .cfg{font-size:.88rem;color:var(--muted);margin:0 0 .5rem;}
+.price-box .amount{font-family:var(--serif);font-size:2.35rem;font-weight:600;color:var(--accent-soft);line-height:1.15;}
+.price-box .incl{font-size:.78rem;color:var(--muted);margin-top:.4rem;}
+.sim-current{display:flex;align-items:center;gap:1rem;}
+.sim-current img{width:76px;height:76px;object-fit:cover;border-radius:10px;border:1px solid var(--line);}
+.sim-current .t{font-family:var(--serif);font-size:1.2rem;margin:0;color:var(--ink);}
+.sim-current .d{font-size:.82rem;color:var(--muted);margin:.15rem 0 0;}
+.sim-actions{display:flex;flex-direction:column;gap:.7rem;}
+.sim-actions .btn{width:100%;}
+.crop-note{font-size:.78rem;color:var(--muted);margin-top:.5rem;}
+
+/* ---------- regalos ---------- */
+.gift-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:1.2rem;max-width:1060px;margin:0 auto;}
+.gift-card{
+  position:relative;display:flex;flex-direction:column;gap:.4rem;
+  border-radius:var(--radius);padding:1.9rem 1.5rem 1.6rem;text-align:center;
+  border:1.5px solid rgba(176,111,46,.45);
+  background:var(--card);color:var(--ink);cursor:pointer;
+  box-shadow:0 12px 28px -22px rgba(24,28,35,.4);
+}
+.gift-card::before{content:none;}
+.gift-card:hover{border-color:var(--accent);transform:translateY(-3px);transition:transform .3s ease,border-color .3s ease;}
+.gift-card .gval{font-family:var(--serif);font-size:2.2rem;color:var(--accent-soft);font-weight:600;line-height:1.1;}
+.gift-card .gname{font-size:.95rem;font-weight:700;}
+.gift-card .gsub{font-size:.8rem;color:var(--muted);line-height:1.5;}
+.gift-card.selected{background:#fbf1e2;border-color:var(--accent);}
+.gift-actions{display:flex;flex-direction:column;gap:.7rem;max-width:460px;margin:1.6rem auto 0;}
+.gift-actions .btn{width:100%;}
+.gift-note{text-align:center;font-size:.84rem;color:var(--muted);max-width:560px;margin:1.1rem auto 0;line-height:1.6;}
+
+/* ---------- crea tu cuadro ---------- */
+.upload-zone{
+  max-width:620px;margin:0 auto;text-align:center;
+  border:2px dashed rgba(24,28,35,.3);border-radius:var(--radius);
+  padding:2.4rem 1.6rem;cursor:pointer;background:var(--card);
+  transition:border-color .3s ease,background .3s ease;
+}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:#fbf4e9;}
+.upload-zone h3{margin:.2rem 0 .5rem;font-size:1.25rem;}
+.upload-zone p{margin:0;color:var(--muted);font-size:.92rem;line-height:1.6;}
+.upload-zone input[type="file"]{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+#custom-prevewrap{display:none;max-width:620px;margin:0 auto;}
+#custom-prevewrap.on{display:block;}
+.custom-scene{
+  border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);
+  padding:28px 36px 56px;display:flex;align-items:center;justify-content:center;
+  height:420px;background:#efe9df;transition:background-color .5s ease;position:relative;
+}
+.custom-scene[data-dark="1"]{background:#1f2b47;}
+.custom-frame{
+  padding:var(--fw,10px);background:var(--frame-bg,#151619);border-radius:2px;
+  box-shadow:0 22px 40px -18px rgba(0,0,0,.55),0 6px 14px -6px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.22),inset 0 -2px 3px rgba(0,0,0,.35);
+}
+.custom-opening{position:relative;overflow:hidden;background:#000;box-shadow:inset 0 2px 8px rgba(0,0,0,.6);}
+.custom-opening img{width:100%;height:100%;object-fit:cover;display:block;}
+#quality-msg{text-align:center;font-size:.88rem;margin:.9rem auto 0;max-width:560px;min-height:1.4em;}
+#quality-msg.ok{color:#2c7a3f;} #quality-msg.warn{color:#8a5b13;} #quality-msg.bad{color:#b03a3a;}
+.custom-controls{display:flex;flex-wrap:wrap;gap:.55rem;justify-content:center;margin-top:1.1rem;}
+
+/* ---------- sobre carlos (banda noche, único bloque oscuro) ---------- */
+#carlos{
+  max-width:none;background:var(--night);padding-top:5.5rem;
+}
+#carlos .inner{max-width:660px;margin:0 auto;position:relative;}
+#carlos h2{color:var(--bg);}
+#carlos .kicker{color:#d9a05f;}
+#carlos p{font-family:var(--serif);font-size:1.12rem;line-height:1.85;color:rgba(241,236,224,.88);margin:0 0 1.6rem;}
+#carlos .btn-row{display:flex;flex-wrap:wrap;gap:.9rem;justify-content:center;margin-top:2.2rem;}
+#carlos .btn{border-color:rgba(241,236,224,.35);color:var(--bg);}
+#carlos .btn-primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+#carlos .signature{margin-top:2.6rem;text-align:center;font-size:.9rem;color:rgba(241,236,224,.7);}
+.firma{width:min(300px,78%);height:auto;display:block;margin:0 auto 1.1rem;color:var(--cream,#f1ece0);overflow:visible;}
+
+/* ---------- contacto ---------- */
+#contacto .inner{max-width:640px;margin:0 auto;}
+.form-field{margin-bottom:1.3rem;}
+.form-field label{display:block;font-size:.95rem;font-weight:600;margin-bottom:.45rem;color:var(--ink);}
+.form-field input,.form-field textarea{
+  width:100%;min-height:56px;padding:.9rem 1.1rem;font-size:1rem;font-family:var(--sans);
+  background:#fff;border:1.5px solid var(--line);border-radius:12px;color:var(--ink);
+}
+.form-field textarea{min-height:130px;resize:vertical;}
+.form-field input:focus,.form-field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(176,111,46,.2);}
+.form-field .err{display:none;color:#b03a3a;font-size:.86rem;margin-top:.35rem;}
+.form-field.invalid input,.form-field.invalid textarea{border-color:#d07070;}
+.form-field.invalid .err{display:block;}
+#order-recap{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius);padding:1.1rem 1.2rem;margin-bottom:1.3rem;
+  font-size:.9rem;color:var(--ink);line-height:1.7;white-space:pre-line;
+}
+#contacto .btn{width:100%;}
+
+/* ---------- footer ---------- */
+footer{margin-top:4rem;padding:3.2rem 1.4rem 6.5rem;text-align:center;border-top:1px solid var(--line);background:var(--bg);}
+footer .motto{font-family:var(--serif);font-size:1.3rem;color:var(--ink);margin:0 0 .4rem;}
+footer .brand-line{font-size:.88rem;color:var(--muted);margin:0 0 1.4rem;}
+footer .social{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center;margin-bottom:1.6rem;}
+footer .social a{
+  display:inline-flex;align-items:center;min-height:var(--tap);padding:.4rem 1.1rem;
+  border-radius:999px;border:1.5px solid var(--line);text-decoration:none;
+  font-size:.9rem;color:var(--muted);background:var(--card);
+}
+footer .social a:hover{border-color:var(--accent);color:var(--accent-soft);}
+footer .legal{font-size:.75rem;color:var(--muted);}
+
+/* sobre-mí en tema claro */
+.upload-zone{display:block;position:relative;width:100%;padding:2.2rem 1.6rem;}
+.up-specs span{color:var(--accent-soft);border-color:rgba(176,111,46,.5);}
+.up-fine{color:var(--muted) !important;}
+.sobremi-texto p{color:var(--muted) !important;}
+.sobremi-photo img{
+  -webkit-mask-image:radial-gradient(78% 72% at 62% 46%, #000 48%, rgba(0,0,0,.55) 74%, transparent 92%) !important;
+  mask-image:radial-gradient(78% 72% at 62% 46%, #000 48%, rgba(0,0,0,.55) 74%, transparent 92%) !important;
+}
+.firma-line{color:var(--accent-soft) !important;}
+
+/* ---------- neutralizar estilos inline de la versión A ---------- */
+#gift-to,#gift-msg,#region-select{
+  background:#fff !important;color:var(--ink) !important;border:1.5px solid var(--line) !important;
+}
+#gift-to::placeholder,#gift-msg::placeholder{color:#9aa2ae;}
+
+@media (max-width:640px){
+  body{font-size:16px;}
+  .masonry{grid-template-columns:repeat(auto-fill,minmax(min(100%,160px),1fr));--gap:10px;}
+  #topbar .brand{font-size:.95rem;}
+  .wall-scene{position:static;height:52vh;min-height:320px;}
+  .hero2{padding-top:6.5rem;}
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#tienda">Saltar a la tienda</a>
+
+<!-- ═══════════ BARRA FIJA ═══════════ -->
+<header id="topbar">
+  <a class="brand" href="#inicio" aria-label="Carlos Huerta — inicio">
+    <svg class="firma firma-brand" viewBox="-118.9 -865.9 4043.8 1097.8" role="img" aria-label="Firma de C. Huerta" style="width:auto;height:34px;margin:0;"><g transform="scale(1 -1)" fill="currentColor"><path d="M371 -107Q280 -107 209.5 -70.5Q139 -34 99.5 37.5Q60 109 60 213Q60 275 76.0 337.0Q92 399 119.5 456.0Q147 513 181 561Q166 621 166 691Q166 744 178 792Q182 806 192 806Q200 806 199 796Q196 776 194.0 753.5Q192 731 192 700Q192 642 203 590Q213 603 223 614Q264 659 320.0 698.5Q376 738 444.5 762.0Q513 786 590 786Q662 786 722.0 759.5Q782 733 818.5 683.5Q855 634 855 564Q855 520 831.5 474.0Q808 428 764.5 389.5Q721 351 659.5 327.0Q598 303 522 303Q422 303 339.0 347.0Q256 391 210 481Q170 410 151.0 337.0Q132 264 132 198Q132 102 164.0 42.0Q196 -18 252.5 -46.5Q309 -75 382 -75Q512 -75 610.5 -9.5Q709 56 773 193Q785 193 785 184Q723 36 615.5 -35.5Q508 -107 371 -107ZM253 548Q240 530 228 511Q263 429 335.0 379.0Q407 329 516 329Q585 329 639.5 350.0Q694 371 731.5 406.0Q769 441 789.0 483.5Q809 526 809 569Q809 622 780.5 662.0Q752 702 703.0 724.5Q654 747 592 747Q530 747 467.5 721.0Q405 695 349.5 650.0Q294 605 253 548Z" transform="translate(0 0)"/><path d="M106 -15Q90 -15 80.0 -5.0Q70 5 70 20Q70 40 85.5 54.0Q101 68 119 68Q135 68 145.0 58.5Q155 49 155 34Q155 15 140.0 0.0Q125 -15 106 -15Z" transform="translate(714 0)"/><path d="M308 -173Q250 -173 193.5 -159.5Q137 -146 91.5 -115.0Q46 -84 19.0 -31.5Q-8 21 -8 99Q-8 155 11.0 204.0Q30 253 61.0 283.5Q92 314 127 314Q139 314 139 308Q139 302 126 298Q101 292 77.5 267.5Q54 243 39.0 203.0Q24 163 24 108Q24 42 48.5 0.0Q73 -42 112.0 -66.0Q151 -90 194.5 -99.5Q238 -109 277 -109Q387 -109 478.5 -74.5Q570 -40 643.5 21.0Q717 82 771.5 161.5Q826 241 862 332Q863 335 864 338Q848 337 837.0 335.0Q826 333 816 329Q794 321 783 321Q777 321 777 329Q777 343 791.5 358.5Q806 374 827 375Q835 375 849.5 375.5Q864 376 880 376Q899 424 921.0 475.0Q943 526 964.0 572.0Q985 618 1001.0 652.0Q1017 686 1024 700Q969 694 910.0 689.5Q851 685 794.0 675.5Q737 666 686 645Q592 606 549.5 542.5Q507 479 507 401Q507 352 534.0 320.0Q561 288 605 288Q645 288 675.0 312.5Q705 337 722.5 374.5Q740 412 740 449Q740 461 737.5 470.5Q735 480 733 484Q733 491 739 491Q752 491 756.5 472.5Q761 454 761 436Q761 396 739.5 357.0Q718 318 680.5 292.5Q643 267 596 267Q554 267 519.5 288.5Q485 310 464.0 347.0Q443 384 443 429Q443 493 472.0 542.5Q501 592 551.5 627.0Q602 662 665 680Q726 698 791.5 705.0Q857 712 920.5 715.5Q984 719 1037 724Q1047 742 1062.5 761.0Q1078 780 1097.0 793.5Q1116 807 1136 807Q1151 807 1162.0 799.5Q1173 792 1173 776Q1173 752 1154.5 736.5Q1136 721 1108.0 713.0Q1080 705 1053 701Q1042 680 1027.0 642.0Q1012 604 994.5 557.5Q977 511 959.5 463.5Q942 416 927 375Q961 373 1006.5 370.5Q1052 368 1100.0 365.5Q1148 363 1191.5 361.0Q1235 359 1263 359Q1274 387 1286 417Q1348 568 1400.0 655.0Q1452 742 1483 752Q1523 765 1538 765Q1544 765 1544 763Q1544 760 1530 753Q1523 749 1501.5 718.0Q1480 687 1450.0 633.5Q1420 580 1387.0 510.0Q1354 440 1324 358Q1341 358 1358.5 359.0Q1376 360 1385 361Q1396 363 1403.5 366.0Q1411 369 1415 369Q1420 369 1420 364Q1420 361 1412 354Q1395 342 1371.0 333.0Q1347 324 1311 322Q1288 256 1268.0 186.5Q1248 117 1248 58Q1248 36 1256.0 16.0Q1264 -4 1286 -4Q1312 -4 1343.0 24.5Q1374 53 1404.0 98.0Q1434 143 1454 193Q1466 193 1466 184Q1442 129 1409.5 77.0Q1377 25 1338.5 -8.5Q1300 -42 1258 -42Q1225 -42 1204.5 -18.0Q1184 6 1184 53Q1184 99 1202.5 170.0Q1221 241 1250 322Q1220 323 1176.0 325.0Q1132 327 1083.0 329.5Q1034 332 989.0 334.0Q944 336 914 337Q910 325 906.0 314.0Q902 303 899 294Q869 206 815.5 123.0Q762 40 687.5 -27.0Q613 -94 517.5 -133.5Q422 -173 308 -173ZM1072 726Q1082 728 1089.5 730.0Q1097 732 1104 734Q1122 740 1129.5 748.0Q1137 756 1137 762Q1137 774 1123 774Q1116 774 1106.0 768.0Q1096 762 1086 748Q1082 742 1078.5 736.5Q1075 731 1072 726Z" transform="translate(1090 0)"/><path d="M88 0Q77 0 61.5 5.0Q46 10 34.5 23.5Q23 37 23 64Q23 90 40.0 124.0Q57 158 70 184Q59 184 59 193Q60 196 68.0 212.0Q76 228 87.0 250.0Q98 272 108.5 292.5Q119 313 125 324Q137 346 163 346H225Q208 333 194.5 317.5Q181 302 161 261Q161 261 154.0 247.0Q147 233 136.5 211.5Q126 190 115.5 168.0Q105 146 98 131Q85 103 81.0 86.5Q77 70 77 56Q77 23 99 23Q123 23 157 62Q185 95 212.0 141.0Q239 187 263.5 236.0Q288 285 307 324Q318 346 346 346H401Q379 328 356.5 292.0Q334 256 307 200Q300 185 289.0 162.0Q278 139 269.5 113.0Q261 87 261 61Q261 26 286 26Q320 26 352.0 73.0Q384 120 415 193Q423 193 424.5 192.0Q426 191 427 184Q416 157 400.5 125.5Q385 94 365.5 65.0Q346 36 322.5 18.0Q299 0 271 0Q246 0 230.0 18.5Q214 37 214 71Q214 98 224 129Q207 99 185.0 69.0Q163 39 138.0 19.5Q113 0 88 0Z" transform="translate(2485 0)"/><path d="M131 -4Q94 -4 64.5 20.0Q35 44 35 93Q35 134 53.5 180.0Q72 226 102.5 266.5Q133 307 170.5 332.5Q208 358 246 358Q265 358 283.0 347.0Q301 336 301 309Q301 284 282.0 254.0Q263 224 228 198Q213 187 190.0 177.0Q167 167 144.0 160.5Q121 154 106 154Q101 142 96.5 122.0Q92 102 92 81Q92 56 102.0 36.0Q112 16 139 16Q172 16 200.5 35.0Q229 54 251.5 83.0Q274 112 290.0 142.0Q306 172 315 193Q327 193 327 184Q314 156 297.5 123.0Q281 90 258.5 61.5Q236 33 204.5 14.5Q173 -4 131 -4ZM113 172Q127 172 160.0 182.5Q193 193 220 216Q246 239 260.0 266.5Q274 294 274 313Q274 335 258 335Q246 335 225.0 319.0Q204 303 173 265Q154 241 137.0 213.0Q120 185 113 172Z" transform="translate(2841 0)"/><path d="M60 196Q68 213 81.0 250.5Q94 288 108.0 334.0Q122 380 129 421Q132 437 140.0 444.5Q148 452 157 452Q170 452 181.0 439.5Q192 427 192 404Q192 376 175.5 356.0Q159 336 135 318Q145 317 156.0 316.5Q167 316 180 316Q227 316 273 322Q275 316 275 313Q275 300 267.5 280.0Q260 260 252 244Q248 235 236.0 211.5Q224 188 210.0 158.5Q196 129 186.5 100.5Q177 72 177 52Q177 26 197 26Q216 26 250.0 70.5Q284 115 318 193Q330 193 330 184Q319 157 302.5 125.0Q286 93 266.0 64.5Q246 36 223.0 17.5Q200 -1 175 -1Q156 -1 137.0 14.5Q118 30 118 65Q118 96 130.0 125.5Q142 155 157.0 181.0Q172 207 184.0 227.0Q196 247 196 259Q196 277 173.5 285.0Q151 293 115 294Q97 248 88.0 226.0Q79 204 71 184Q55 184 60 196Z" transform="translate(3097 0)"/><path d="M266 528Q253 509 237.0 480.0Q221 451 207.5 424.0Q194 397 187 383H279Q279 379 275.5 370.0Q272 361 262 357H175Q163 330 147.5 292.0Q132 254 117.5 213.0Q103 172 93.5 136.5Q84 101 84 79Q84 49 92.0 34.5Q100 20 121 20Q148 20 173.0 46.5Q198 73 220.5 113.0Q243 153 260 193Q272 193 272 184Q261 157 245.0 125.0Q229 93 208.5 63.5Q188 34 162.5 15.5Q137 -3 106 -3Q64 -3 49.0 20.5Q34 44 34 81Q34 108 44.0 146.5Q54 185 68.5 226.0Q83 267 97.0 302.5Q111 338 119 357H55Q55 365 62.0 374.0Q69 383 77 383H130Q138 399 148.5 423.0Q159 447 177 476Q192 500 215.5 514.0Q239 528 266 528Z" transform="translate(3356 0)"/><path d="M276 -3Q253 -3 235.5 10.0Q218 23 218 63Q218 80 220.5 95.0Q223 110 227 127Q218 112 202.0 90.0Q186 68 166.5 47.0Q147 26 126.5 12.0Q106 -2 88 -2Q62 -2 46.0 21.5Q30 45 30 83Q30 124 49.0 171.0Q68 218 101.0 261.0Q134 304 177.0 331.0Q220 358 267 358Q290 358 311.0 350.5Q332 343 348 326Q355 319 355 310Q355 304 350.0 300.0Q345 296 337 298Q326 333 290 333Q273 333 251 322Q224 308 193.5 277.5Q163 247 136.5 208.5Q110 170 93.0 131.0Q76 92 76 60Q76 27 101 27Q123 27 146.5 48.0Q170 69 191.5 100.5Q213 132 231.0 163.0Q249 194 259 213Q274 240 287.0 258.0Q300 276 324 276Q335 276 346.0 273.0Q357 270 369 272Q339 242 316.5 201.0Q294 160 282.0 120.5Q270 81 270 54Q270 24 290 24Q306 24 324.5 42.0Q343 60 360.5 87.5Q378 115 393.0 143.5Q408 172 417 193Q422 193 425.5 192.0Q429 191 429 184Q428 180 425.5 175.5Q423 171 418 160Q410 144 396.0 117.0Q382 90 363.0 62.5Q344 35 322.0 16.0Q300 -3 276 -3Z" transform="translate(3557 0)"/></g></svg>
+  </a>
+  <nav id="topnav" aria-label="Secciones de la tienda">
+    <a href="#inicio">Inicio</a>
+    <a href="#sobre-mi">Algo sobre mí</a>
+    <a href="#tienda">Tienda</a>
+    <a href="#simulador">Simulador</a>
+    <a href="#regalos">Regalos</a>
+    <a href="#tufoto">Crea el tuyo</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+  <button id="motion-toggle" type="button" aria-pressed="false">
+    ◐ Movimiento
+  </button>
+</header>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero2" id="inicio">
+  <p class="welcome">Bienvenidos</p>
+  <h1>El cielo de Tarapacá,<br><em>en tu pared</em></h1>
+  <p class="sub">Cuadros de astrofotografía con moldura de madera, distintos tamaños y un simulador para verlos colgados antes de decidir. Producción y entrega en 4 a 7 días a todo Chile por BlueXpress.</p>
+  <p class="author"><b>Carlos Huerta Orellana</b> — Astrofotógrafo · Edición Cielos de Tarapacá · «Que el cielo sostenga mis manos»</p>
+  <div class="btn-row">
+    <a class="btn btn-primary" href="#tienda">Ver cuadros</a>
+    <a class="btn" href="#simulador">Probar el simulador</a>
+  </div>
+  <div class="hero2-collage" aria-label="Fotografías destacadas de la colección">
+    <figure><img src="assets/hero.jpg?v=5" alt="Vía Láctea, un cometa y la Luna sobre el horizonte del desierto de Tarapacá" fetchpriority="high" decoding="async"></figure>
+    <figure><img src="assets/cap2-01.jpg?v=5" alt="Figura humana contemplando la Vía Láctea sobre el desierto" loading="lazy" decoding="async"></figure>
+    <figure><img src="assets/cap3-09.jpg?v=5" alt="Edificio colonial de arcos iluminado bajo la Vía Láctea en un pueblo del norte" loading="lazy" decoding="async"></figure>
+  </div>
+</section>
+
+<main>
+<!-- ═══════════ ALGO SOBRE MÍ ═══════════ -->
+<section id="sobre-mi" aria-labelledby="sobremi-title">
+  <div class="sobremi-wrap">
+    <div class="sobremi-texto">
+      <p class="kicker" style="text-align:left;">Algo sobre mí</p>
+      <h2 id="sobremi-title" style="text-align:left;">Hola, soy Carlos</h2>
+      <p>Astrofotógrafo de la Región de Tarapacá. Vivo con Parkinson hace diez años y hace tiempo que el cielo se convirtió en mi lugar de trabajo y de calma: esperar a que el viento se calme, encuadrar, y dejar que la luz que viajó miles de años termine en mi cámara.</p>
+      <p>Cada cuadro de esta tienda sale de una de esas noches del desierto más oscuro del planeta. Que el cielo sostenga mis manos es también una invitación a que esa luz sostenga un rincón de tu vida.</p>
+      <p class="firma-line">— C. Huerta</p>
+    </div>
+    <figure class="sobremi-photo">
+      <img src="assets/carlos-completa.jpg?v=5" width="900" height="599"
+           alt="Carlos Huerta, astrofotógrafo, de pie en el desierto de altura con gorro y chaqueta negra, sonriendo a la cámara; detrás, un volcán nevado y cielo azul despejado"
+           decoding="async">
+    </figure>
+  </div>
+</section>
+
+<!-- ═══════════ TIENDA ═══════════ -->
+<section id="tienda" aria-labelledby="tienda-title">
+  <p class="kicker">Cielos de Tarapacá</p>
+  <h2 id="tienda-title">La colección</h2>
+  <p class="lead">72 fotografías originales, listas para imprimirse como cuadro con moldura de madera de 20&nbsp;mm ya ensamblada. Elige una y el simulador te la muestra colgada, con su precio final.</p>
+  <div class="filters" role="group" aria-label="Filtrar tienda por categoría">
+    <button class="chip" type="button" data-cat="all" aria-pressed="true">Todas</button>
+    <button class="chip" type="button" data-cat="I" aria-pressed="false">Cielo y desierto</button>
+    <button class="chip" type="button" data-cat="II" aria-pressed="false">Quienes miran</button>
+    <button class="chip" type="button" data-cat="III" aria-pressed="false">Patrimonio</button>
+    <button class="chip" type="button" data-cat="IV" aria-pressed="false">Agua y oasis</button>
+  </div>
+  <div class="shop-grid" id="shop-grid"></div>
+  <p class="sr-only" id="filter-status" aria-live="polite"></p>
+</section>
+
+<!-- ═══════════ SIMULADOR ═══════════ -->
+<section id="simulador" aria-labelledby="sim-title">
+  <p class="kicker">Simulador en tiempo real</p>
+  <h2 id="sim-title">Mira tu cuadro colgado antes de decidir</h2>
+  <p class="lead">La vista previa muestra proporciones reales de la moldura sobre la pared que elijas. El precio cambia con cada opción.</p>
+  <div class="sim-wrap">
+    <div class="wall-scene" id="wall" aria-label="Vista previa del cuadro en la pared">
+      <div class="artwork" id="artwork">
+        <div class="frame" id="frame">
+          <div class="opening" id="opening"><img id="art-img" src="assets/hero.jpg?v=5" alt="Arco de la Vía Láctea sobre dunas del desierto de Tarapacá"></div>
+        </div>
+      </div>
+      <p class="wall-note" id="wall-note">Simulación referencial de proporciones reales.</p>
+    </div>
+
+    <div class="sim-panel">
+      <div class="sim-current">
+        <img id="sim-thumb" src="assets/hero.jpg?v=5" alt="">
+        <div>
+          <p class="t" id="sim-work">Elige una obra de la colección</p>
+          <p class="d" id="sim-desc">Toca «Verlo enmarcado y con precio» en cualquier obra para comenzar aquí.</p>
+        </div>
+      </div>
+
+      <div class="field">
+        <p class="label"><span>Tamaño de impresión</span></p>
+        <div class="opt-row" id="size-opts" role="group" aria-label="Tamaño de impresión"></div>
+      </div>
+
+      <div class="field">
+        <p class="label"><span>Orientación</span></p>
+        <div class="opt-row" role="group" aria-label="Orientación">
+          <button class="opt" type="button" data-orient="h" aria-pressed="true">↔ Horizontal</button>
+          <button class="opt" type="button" data-orient="v" aria-pressed="false">↕ Vertical</button>
+        </div>
+        <p class="crop-note">La imagen se recorta suavemente para conservar la proporción del formato elegido.</p>
+      </div>
+
+      <div class="field">
+        <p class="label"><span>Moldura de madera — 20 mm</span><span class="hint">incluida en el precio</span></p>
+        <div class="opt-row" id="frame-opts" role="group" aria-label="Color de la moldura"></div>
+      </div>
+
+      <div class="field">
+        <p class="label"><span>Pared de la simulación</span><span class="hint">solo visual, no altera el precio</span></p>
+        <div class="opt-row" id="wall-opts" role="group" aria-label="Color de pared"></div>
+      </div>
+
+      <div class="price-box" role="group" aria-label="Precio estimado">
+        <p class="cfg" id="cfg-line">—</p>
+        <p class="amount" id="price-line" aria-live="polite">—</p>
+        <p class="incl">Incluye impresión en calidad museo y moldura de madera ensamblada. Producción y entrega en 4 a 7 días. Envío a todo Chile por BlueXpress: se calcula con tu región al momento del pedido.</p>
+      </div>
+
+      <div class="sim-actions">
+        <button class="btn btn-primary" type="button" id="add-to-order">Agregar a pedido</button>
+        <a class="btn btn-wa" id="direct-wa" href="#" target="_blank" rel="noopener">Consultar por esta obra</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ REGALOS ═══════════ -->
+<section id="regalos" aria-labelledby="regalos-title">
+  <p class="kicker">Para alguien especial</p>
+  <h2 id="regalos-title">Regala los cielos de Tarapacá</h2>
+  <p class="lead">Una tarjeta de regalo para que esa persona elija su propia obra, su tamaño y su moldura en el simulador. Llega por correo con una dedicatoria tuya, y Carlos la hace llegar cuando quien la reciba decida su cuadro.</p>
+  <div class="field" style="max-width:560px;margin:0 auto 1.8rem;">
+    <p class="label"><span>Para: nombre de quien recibe</span></p>
+    <input id="gift-to" type="text" autocomplete="off" placeholder="Ej: Mamá Gina" style="width:100%;min-height:56px;padding:.9rem 1.1rem;font-size:1rem;background:rgba(241,236,224,.06);border:1.5px solid rgba(241,236,224,.3);border-radius:12px;color:var(--cream);">
+  </div>
+  <div class="field" style="max-width:560px;margin:0 auto 1.8rem;">
+    <p class="label"><span>Dedicatoria (opcional)</span></p>
+    <textarea id="gift-msg" rows="3" maxlength="280" placeholder="Ej: Para que nuestras noches tengan el mismo cielo." style="width:100%;padding:.9rem 1.1rem;font-size:1rem;font-family:var(--sans);background:rgba(241,236,224,.06);border:1.5px solid rgba(241,236,224,.3);border-radius:12px;color:var(--cream);resize:vertical;"></textarea>
+  </div>
+  <div class="gift-grid" id="gift-grid" role="group" aria-label="Montos de tarjeta de regalo"></div>
+  <div class="gift-actions">
+    <button class="btn btn-primary" type="button" id="gift-add">Agregar tarjeta al pedido</button>
+  </div>
+  <p class="gift-note">Elige un monto arriba · la tarjeta se agrega al pedido · al enviar, Carlos recibe también el nombre y la dedicatoria. Valedera por 12 meses · sin costo de envío (se entrega digitalmente).</p>
+</section>
+
+<!-- ═══════════ CREA TU CUADRO ═══════════ -->
+<section id="tufoto" aria-labelledby="tufoto-title">
+  <p class="kicker">Tu recuerdo, en la misma calidad</p>
+  <h2 id="tufoto-title">Crea tu cuadro con tu foto</h2>
+  <p class="lead">Sube tu fotografía y previsualízala enmarcada con las mismas molduras de madera y el mismo cálculo de precio de la colección. Si la resolución es suficiente para el tamaño elegido, Carlos imprime tu cuadro con la misma calidad museo.</p>
+  <label class="upload-zone" id="upload-zone" for="file-input">
+    <h3>Toca aquí para elegir tu foto</h3>
+    <div class="up-specs">
+      <span>JPG o PNG</span>
+      <span>Al menos 2400 px de lado largo</span>
+      <span>Hasta 15 MB</span>
+    </div>
+    <p>Usa el archivo original de tu cámara o galería.</p>
+    <p class="up-fine">Se procesa en tu dispositivo — nada se sube a ningún servidor hasta el pedido.</p>
+    <input id="file-input" type="file" accept="image/jpeg,image/png" aria-label="Elegir fotografía para cuadro personalizado">
+  </label>
+  <p id="quality-msg" aria-live="polite"></p>
+  <div id="custom-prevewrap">
+    <div class="custom-scene" id="custom-scene">
+      <div class="custom-frame" id="custom-frame">
+        <div class="custom-opening" id="custom-opening"><img id="custom-img" src="" alt="Vista previa de tu fotografía enmarcada"></div>
+      </div>
+    </div>
+    <div class="custom-controls">
+      <div class="opt-row" id="c-size-opts" role="group" aria-label="Tamaño de tu cuadro" style="justify-content:center;"></div>
+    </div>
+    <div class="custom-controls">
+      <div class="opt-row" id="c-frame-opts" role="group" aria-label="Moldura de tu cuadro" style="justify-content:center;"></div>
+    </div>
+    <div class="custom-controls">
+      <div class="opt-row" id="c-wall-opts" role="group" aria-label="Pared de la simulación" style="justify-content:center;"></div>
+    </div>
+    <div class="price-box" style="max-width:620px;margin:1.4rem auto 0;" role="group" aria-label="Precio de tu cuadro">
+      <p class="cfg" id="c-cfg-line">—</p>
+      <p class="amount" id="c-price-line">—</p>
+      <p class="incl">Solo la impresión y moldura de TU foto (sin obra de Carlos). Si quieres combinar, agrega ambos al pedido.</p>
+    </div>
+    <div class="gift-actions">
+      <button class="btn btn-primary" type="button" id="c-add">Agregar mi cuadro al pedido</button>
+      <button class="btn" type="button" id="c-clear">Elegir otra foto</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SOBRE CARLOS ═══════════ -->
+<section id="carlos" aria-labelledby="carlos-title">
+  <div class="inner">
+    <p class="kicker">Palabras del autor</p>
+    <h2 id="carlos-title">Sobre Carlos</h2>
+    <p>Tengo un ritual: esperar. Esperar a que el viento se calme, a que la noche entregue su luz. Entre el desierto, el altiplano y la costa de Tarapacá aprendí que el firmamento no se mira: se habita.</p>
+    <p>Vivo con Parkinson hace diez años. El cuerpo a veces pone límites, pero la noche abre espacio. Cuando encuadro, el temblor deja de ser el centro — el centro pasa a ser esa luz que viajó miles de años para terminar en mi cámara.</p>
+    <p>Cada cuadro de esta colección es una conversación con la oscuridad: paciencia, frío, intentos. Y cuando por fin aparece la imagen, siento una forma de libertad que no cabe en palabras. Que el cielo sostenga mis manos es también una invitación: que la luz que yo atrapé sostenga un rincón de tu vida.</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="https://wa.me/56957555679?text=Hola%20Carlos%2C%20quiero%20conversar%20sobre%20tu%20proyecto" target="_blank" rel="noopener">Conversemos sobre el proyecto</a>
+      <a class="btn" href="mailto:Huerta.o.carlos@gmail.com?subject=Dossier%20del%20proyecto%20%E2%80%94%20Cuando%20el%20cielo%20sostiene%20mis%20manos">Solicitar dossier del proyecto</a>
+    </div>
+    <div class="signature">
+      <svg class="firma" viewBox="-118.9 -865.9 4043.8 1097.8" role="img" aria-label="Firma de C. Huerta"><g transform="scale(1 -1)" fill="currentColor"><path d="M371 -107Q280 -107 209.5 -70.5Q139 -34 99.5 37.5Q60 109 60 213Q60 275 76.0 337.0Q92 399 119.5 456.0Q147 513 181 561Q166 621 166 691Q166 744 178 792Q182 806 192 806Q200 806 199 796Q196 776 194.0 753.5Q192 731 192 700Q192 642 203 590Q213 603 223 614Q264 659 320.0 698.5Q376 738 444.5 762.0Q513 786 590 786Q662 786 722.0 759.5Q782 733 818.5 683.5Q855 634 855 564Q855 520 831.5 474.0Q808 428 764.5 389.5Q721 351 659.5 327.0Q598 303 522 303Q422 303 339.0 347.0Q256 391 210 481Q170 410 151.0 337.0Q132 264 132 198Q132 102 164.0 42.0Q196 -18 252.5 -46.5Q309 -75 382 -75Q512 -75 610.5 -9.5Q709 56 773 193Q785 193 785 184Q723 36 615.5 -35.5Q508 -107 371 -107ZM253 548Q240 530 228 511Q263 429 335.0 379.0Q407 329 516 329Q585 329 639.5 350.0Q694 371 731.5 406.0Q769 441 789.0 483.5Q809 526 809 569Q809 622 780.5 662.0Q752 702 703.0 724.5Q654 747 592 747Q530 747 467.5 721.0Q405 695 349.5 650.0Q294 605 253 548Z" transform="translate(0 0)"/><path d="M106 -15Q90 -15 80.0 -5.0Q70 5 70 20Q70 40 85.5 54.0Q101 68 119 68Q135 68 145.0 58.5Q155 49 155 34Q155 15 140.0 0.0Q125 -15 106 -15Z" transform="translate(714 0)"/><path d="M308 -173Q250 -173 193.5 -159.5Q137 -146 91.5 -115.0Q46 -84 19.0 -31.5Q-8 21 -8 99Q-8 155 11.0 204.0Q30 253 61.0 283.5Q92 314 127 314Q139 314 139 308Q139 302 126 298Q101 292 77.5 267.5Q54 243 39.0 203.0Q24 163 24 108Q24 42 48.5 0.0Q73 -42 112.0 -66.0Q151 -90 194.5 -99.5Q238 -109 277 -109Q387 -109 478.5 -74.5Q570 -40 643.5 21.0Q717 82 771.5 161.5Q826 241 862 332Q863 335 864 338Q848 337 837.0 335.0Q826 333 816 329Q794 321 783 321Q777 321 777 329Q777 343 791.5 358.5Q806 374 827 375Q835 375 849.5 375.5Q864 376 880 376Q899 424 921.0 475.0Q943 526 964.0 572.0Q985 618 1001.0 652.0Q1017 686 1024 700Q969 694 910.0 689.5Q851 685 794.0 675.5Q737 666 686 645Q592 606 549.5 542.5Q507 479 507 401Q507 352 534.0 320.0Q561 288 605 288Q645 288 675.0 312.5Q705 337 722.5 374.5Q740 412 740 449Q740 461 737.5 470.5Q735 480 733 484Q733 491 739 491Q752 491 756.5 472.5Q761 454 761 436Q761 396 739.5 357.0Q718 318 680.5 292.5Q643 267 596 267Q554 267 519.5 288.5Q485 310 464.0 347.0Q443 384 443 429Q443 493 472.0 542.5Q501 592 551.5 627.0Q602 662 665 680Q726 698 791.5 705.0Q857 712 920.5 715.5Q984 719 1037 724Q1047 742 1062.5 761.0Q1078 780 1097.0 793.5Q1116 807 1136 807Q1151 807 1162.0 799.5Q1173 792 1173 776Q1173 752 1154.5 736.5Q1136 721 1108.0 713.0Q1080 705 1053 701Q1042 680 1027.0 642.0Q1012 604 994.5 557.5Q977 511 959.5 463.5Q942 416 927 375Q961 373 1006.5 370.5Q1052 368 1100.0 365.5Q1148 363 1191.5 361.0Q1235 359 1263 359Q1274 387 1286 417Q1348 568 1400.0 655.0Q1452 742 1483 752Q1523 765 1538 765Q1544 765 1544 763Q1544 760 1530 753Q1523 749 1501.5 718.0Q1480 687 1450.0 633.5Q1420 580 1387.0 510.0Q1354 440 1324 358Q1341 358 1358.5 359.0Q1376 360 1385 361Q1396 363 1403.5 366.0Q1411 369 1415 369Q1420 369 1420 364Q1420 361 1412 354Q1395 342 1371.0 333.0Q1347 324 1311 322Q1288 256 1268.0 186.5Q1248 117 1248 58Q1248 36 1256.0 16.0Q1264 -4 1286 -4Q1312 -4 1343.0 24.5Q1374 53 1404.0 98.0Q1434 143 1454 193Q1466 193 1466 184Q1442 129 1409.5 77.0Q1377 25 1338.5 -8.5Q1300 -42 1258 -42Q1225 -42 1204.5 -18.0Q1184 6 1184 53Q1184 99 1202.5 170.0Q1221 241 1250 322Q1220 323 1176.0 325.0Q1132 327 1083.0 329.5Q1034 332 989.0 334.0Q944 336 914 337Q910 325 906.0 314.0Q902 303 899 294Q869 206 815.5 123.0Q762 40 687.5 -27.0Q613 -94 517.5 -133.5Q422 -173 308 -173ZM1072 726Q1082 728 1089.5 730.0Q1097 732 1104 734Q1122 740 1129.5 748.0Q1137 756 1137 762Q1137 774 1123 774Q1116 774 1106.0 768.0Q1096 762 1086 748Q1082 742 1078.5 736.5Q1075 731 1072 726Z" transform="translate(1090 0)"/><path d="M88 0Q77 0 61.5 5.0Q46 10 34.5 23.5Q23 37 23 64Q23 90 40.0 124.0Q57 158 70 184Q59 184 59 193Q60 196 68.0 212.0Q76 228 87.0 250.0Q98 272 108.5 292.5Q119 313 125 324Q137 346 163 346H225Q208 333 194.5 317.5Q181 302 161 261Q161 261 154.0 247.0Q147 233 136.5 211.5Q126 190 115.5 168.0Q105 146 98 131Q85 103 81.0 86.5Q77 70 77 56Q77 23 99 23Q123 23 157 62Q185 95 212.0 141.0Q239 187 263.5 236.0Q288 285 307 324Q318 346 346 346H401Q379 328 356.5 292.0Q334 256 307 200Q300 185 289.0 162.0Q278 139 269.5 113.0Q261 87 261 61Q261 26 286 26Q320 26 352.0 73.0Q384 120 415 193Q423 193 424.5 192.0Q426 191 427 184Q416 157 400.5 125.5Q385 94 365.5 65.0Q346 36 322.5 18.0Q299 0 271 0Q246 0 230.0 18.5Q214 37 214 71Q214 98 224 129Q207 99 185.0 69.0Q163 39 138.0 19.5Q113 0 88 0Z" transform="translate(2485 0)"/><path d="M131 -4Q94 -4 64.5 20.0Q35 44 35 93Q35 134 53.5 180.0Q72 226 102.5 266.5Q133 307 170.5 332.5Q208 358 246 358Q265 358 283.0 347.0Q301 336 301 309Q301 284 282.0 254.0Q263 224 228 198Q213 187 190.0 177.0Q167 167 144.0 160.5Q121 154 106 154Q101 142 96.5 122.0Q92 102 92 81Q92 56 102.0 36.0Q112 16 139 16Q172 16 200.5 35.0Q229 54 251.5 83.0Q274 112 290.0 142.0Q306 172 315 193Q327 193 327 184Q314 156 297.5 123.0Q281 90 258.5 61.5Q236 33 204.5 14.5Q173 -4 131 -4ZM113 172Q127 172 160.0 182.5Q193 193 220 216Q246 239 260.0 266.5Q274 294 274 313Q274 335 258 335Q246 335 225.0 319.0Q204 303 173 265Q154 241 137.0 213.0Q120 185 113 172Z" transform="translate(2841 0)"/><path d="M60 196Q68 213 81.0 250.5Q94 288 108.0 334.0Q122 380 129 421Q132 437 140.0 444.5Q148 452 157 452Q170 452 181.0 439.5Q192 427 192 404Q192 376 175.5 356.0Q159 336 135 318Q145 317 156.0 316.5Q167 316 180 316Q227 316 273 322Q275 316 275 313Q275 300 267.5 280.0Q260 260 252 244Q248 235 236.0 211.5Q224 188 210.0 158.5Q196 129 186.5 100.5Q177 72 177 52Q177 26 197 26Q216 26 250.0 70.5Q284 115 318 193Q330 193 330 184Q319 157 302.5 125.0Q286 93 266.0 64.5Q246 36 223.0 17.5Q200 -1 175 -1Q156 -1 137.0 14.5Q118 30 118 65Q118 96 130.0 125.5Q142 155 157.0 181.0Q172 207 184.0 227.0Q196 247 196 259Q196 277 173.5 285.0Q151 293 115 294Q97 248 88.0 226.0Q79 204 71 184Q55 184 60 196Z" transform="translate(3097 0)"/><path d="M266 528Q253 509 237.0 480.0Q221 451 207.5 424.0Q194 397 187 383H279Q279 379 275.5 370.0Q272 361 262 357H175Q163 330 147.5 292.0Q132 254 117.5 213.0Q103 172 93.5 136.5Q84 101 84 79Q84 49 92.0 34.5Q100 20 121 20Q148 20 173.0 46.5Q198 73 220.5 113.0Q243 153 260 193Q272 193 272 184Q261 157 245.0 125.0Q229 93 208.5 63.5Q188 34 162.5 15.5Q137 -3 106 -3Q64 -3 49.0 20.5Q34 44 34 81Q34 108 44.0 146.5Q54 185 68.5 226.0Q83 267 97.0 302.5Q111 338 119 357H55Q55 365 62.0 374.0Q69 383 77 383H130Q138 399 148.5 423.0Q159 447 177 476Q192 500 215.5 514.0Q239 528 266 528Z" transform="translate(3356 0)"/><path d="M276 -3Q253 -3 235.5 10.0Q218 23 218 63Q218 80 220.5 95.0Q223 110 227 127Q218 112 202.0 90.0Q186 68 166.5 47.0Q147 26 126.5 12.0Q106 -2 88 -2Q62 -2 46.0 21.5Q30 45 30 83Q30 124 49.0 171.0Q68 218 101.0 261.0Q134 304 177.0 331.0Q220 358 267 358Q290 358 311.0 350.5Q332 343 348 326Q355 319 355 310Q355 304 350.0 300.0Q345 296 337 298Q326 333 290 333Q273 333 251 322Q224 308 193.5 277.5Q163 247 136.5 208.5Q110 170 93.0 131.0Q76 92 76 60Q76 27 101 27Q123 27 146.5 48.0Q170 69 191.5 100.5Q213 132 231.0 163.0Q249 194 259 213Q274 240 287.0 258.0Q300 276 324 276Q335 276 346.0 273.0Q357 270 369 272Q339 242 316.5 201.0Q294 160 282.0 120.5Q270 81 270 54Q270 24 290 24Q306 24 324.5 42.0Q343 60 360.5 87.5Q378 115 393.0 143.5Q408 172 417 193Q422 193 425.5 192.0Q429 191 429 184Q428 180 425.5 175.5Q423 171 418 160Q410 144 396.0 117.0Q382 90 363.0 62.5Q344 35 322.0 16.0Q300 -3 276 -3Z" transform="translate(3557 0)"/></g></svg>
+      <span style="display:block;font-family:var(--serif);font-size:1rem;color:var(--cream);margin-bottom:.35rem;">Carlos Huerta Orellana</span>
+      Astrofotógrafo · Región de Tarapacá, Chile
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CONTACTO / PEDIDO ═══════════ -->
+<section id="contacto" aria-labelledby="contacto-title">
+  <div class="inner">
+    <p class="kicker">Contacto y pedido</p>
+    <h2 id="contacto-title">Hablemos de tu cuadro</h2>
+    <p class="lead">Escribe tus datos y presiona «Enviar pedido»: el pedido llega a Carlos por WhatsApp y por correo, con el resumen completo y el envío BlueXpress a tu región. Producción y entrega en 4 a 7 días. El pago se coordina directamente con Carlos.</p>
+    <div id="order-recap" aria-live="polite">Tu pedido aparecerá aquí cuando agregues cuadros en el simulador.</div>
+    <form id="contact-form" novalidate>
+      <div class="form-field" id="ff-name">
+        <label for="f-name">Nombre</label>
+        <input id="f-name" name="name" type="text" autocomplete="name" required>
+        <p class="err">Por favor escribe tu nombre.</p>
+      </div>
+      <div class="form-field" id="ff-email">
+        <label for="f-email">Correo <span aria-hidden="true" style="color:var(--ochre);">*</span></label>
+        <input id="f-email" name="email" type="email" autocomplete="email" required>
+        <p class="err">Escribe tu correo: por él te confirmamos el pedido y el envío.</p>
+      </div>
+      <div class="form-field">
+        <label for="f-msg">Mensaje (opcional)</label>
+        <textarea id="f-msg" name="msg" placeholder="Consulta tiempos de entrega, despacho a tu ciudad, formatos especiales…"></textarea>
+      </div>
+      <button class="btn btn-wa" type="submit">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1a13.7 13.7 0 0 1-6-5.2c-.5-.9-.8-1.8-.8-2.6 0-1 .5-1.8 1.1-2.2.2-.1.4-.2.6-.2h.5c.2 0 .4 0 .6.4l.8 2c.1.2.1.4 0 .6l-.4.5c-.1.2-.3.3-.1.6.4.7 1 1.4 1.7 2 .8.6 1.4.9 1.7 1 .2.1.4 0 .5-.1l.7-.8c.2-.2.4-.2.6-.1l2 .9c.2.1.4.2.4.3.1.3.1.9-.2 1.5Z"/></svg>
+        Enviar pedido (WhatsApp + correo)
+      </button>
+    </form>
+  </div>
+</section>
+</main>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer>
+  <p class="motto">«Que el cielo sostenga mis manos»</p>
+  <p class="brand-line">Carlos Huerta Orellana — Astrofotógrafo · Edición Cielos de Tarapacá</p>
+  <div class="social">
+    <a href="https://instagram.com/carloshuertao" target="_blank" rel="noopener">Instagram @carloshuertao</a>
+    <a href="https://wa.me/56957555679?text=Hola%20Carlos%2C%20v%C3%AD%20tu%20tienda%20de%20cuadros" target="_blank" rel="noopener">WhatsApp</a>
+    <a href="mailto:Huerta.o.carlos@gmail.com">Correo</a>
+    <a href="tienda.html">Versión noche</a>
+    <a href="./">Volver al portafolio</a>
+  </div>
+  <p class="legal">© 2026 Carlos Fabrizio Huerta Orellana · Todas las fotografías son obras originales; su reproducción está reservada.</p>
+</footer>
+
+<!-- ═══════════ PEDIDO FLOTANTE ═══════════ -->
+<button id="order-fab" type="button" hidden aria-haspopup="dialog">
+  <span>Pedido</span><span class="count" id="fab-count">0</span>
+</button>
+<div id="overlay"></div>
+<aside id="order-panel" role="dialog" aria-modal="true" aria-labelledby="order-title" aria-hidden="true">
+  <div class="head">
+    <h2 id="order-title">Tu pedido</h2>
+    <button class="opt" type="button" id="close-order" aria-label="Cerrar pedido">✕ Cerrar</button>
+  </div>
+  <div id="order-list"><p class="order-empty">Aún no has agregado cuadros.<br>Configura uno en el simulador y toca «Agregar a pedido».</p></div>
+  <div class="foot">
+    <div class="field" style="margin-bottom:.9rem;">
+      <p class="label"><span>Tu región · envío BlueXpress</span><span class="hint" id="region-hint">4 a 7 días</span></p>
+      <select id="region-select" aria-label="Región de envío" style="width:100%;min-height:var(--tap);padding:.6rem .9rem;font-size:.95rem;font-family:var(--sans);background:rgba(241,236,224,.06);border:1.5px solid rgba(241,236,224,.3);border-radius:12px;color:var(--cream);">
+        <option value="">— Elige tu región —</option>
+      </select>
+    </div>
+    <div class="totals" aria-live="polite">
+      <div class="trow"><span>Subtotal cuadros</span><span id="sub-amount">$0</span></div>
+      <div class="trow"><span>Envío BlueXpress</span><span id="ship-amount">elige región</span></div>
+      <div class="trow big"><span>Total</span><span class="n" id="total-amount">$0</span></div>
+    </div>
+    <p class="ship-note">Entrega en 4 a 7 días · envíos a todo Chile por BlueXpress. Valores de envío referenciales: Carlos los confirma contigo. El pago se coordina directamente con Carlos.</p>
+    <button class="btn btn-primary" type="button" id="send-order" style="width:100%;margin-bottom:.7rem;">Continuar pedido (datos y total)</button>
+    <button class="btn" type="button" id="clear-order" style="width:100%;">Vaciar pedido</button>
+  </div>
+</aside>
+
+<noscript><p style="text-align:center;padding:2rem;color:var(--rose);">Esta tienda necesita JavaScript para el simulador y el pedido.</p></noscript>
+
+<script>
+/* ================================================================
+   DATOS — provienen del build (build_shop.py). cost = proveedor CLP
+   (impresión + marco ya armado, tabla sep-2026).
+   Precio de venta = cost / 0.65  → margen del 35% sobre venta,
+   redondeado al alza a múltiplos de $500.
+   ================================================================ */
+var PRODUCTS = [{"id": "cap1-01", "file": "assets/cap1-01.jpg", "cap": "I", "n": 1, "w": 1440, "h": 768, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-02", "file": "assets/cap1-02.jpg", "cap": "I", "n": 2, "w": 810, "h": 1440, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-03", "file": "assets/cap1-03.jpg", "cap": "I", "n": 3, "w": 1440, "h": 593, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-04", "file": "assets/cap1-04.jpg", "cap": "I", "n": 4, "w": 960, "h": 1440, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-05", "file": "assets/cap1-05.jpg", "cap": "I", "n": 5, "w": 1440, "h": 960, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-06", "file": "assets/cap1-06.jpg", "cap": "I", "n": 6, "w": 960, "h": 1440, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-07", "file": "assets/cap1-07.jpg", "cap": "I", "n": 7, "w": 1151, "h": 1440, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-08", "file": "assets/cap1-08.jpg", "cap": "I", "n": 8, "w": 1364, "h": 908, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-09", "file": "assets/cap1-09.jpg", "cap": "I", "n": 9, "w": 960, "h": 1440, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-10", "file": "assets/cap1-10.jpg", "cap": "I", "n": 10, "w": 1440, "h": 961, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-11", "file": "assets/cap1-11.jpg", "cap": "I", "n": 11, "w": 960, "h": 1440, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-12", "file": "assets/cap1-12.jpg", "cap": "I", "n": 12, "w": 960, "h": 1440, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-13", "file": "assets/cap1-13.jpg", "cap": "I", "n": 13, "w": 1440, "h": 651, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-14", "file": "assets/cap1-14.jpg", "cap": "I", "n": 14, "w": 1440, "h": 805, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-15", "file": "assets/cap1-15.jpg", "cap": "I", "n": 15, "w": 1440, "h": 960, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-16", "file": "assets/cap1-16.jpg", "cap": "I", "n": 16, "w": 1080, "h": 1440, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-17", "file": "assets/cap1-17.jpg", "cap": "I", "n": 17, "w": 1440, "h": 960, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-18", "file": "assets/cap1-18.jpg", "cap": "I", "n": 18, "w": 960, "h": 1440, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-19", "file": "assets/cap1-19.jpg", "cap": "I", "n": 19, "w": 1440, "h": 709, "alt": "Fotografía nocturna del cielo estrellado y la Vía Láctea sobre el paisaje desértico de Tarapacá"}, {"id": "cap1-20", "file": "assets/cap1-20.jpg", "cap": "I", "n": 20, "w": 1110, "h": 1440, "alt": "Núcleo de la Vía Láctea cruzando en diagonal un cielo rosado sobre montículos de roca del desierto"}, {"id": "cap1-21", "file": "assets/cap1-21.jpg", "cap": "I", "n": 21, "w": 1440, "h": 960, "alt": "Vehículo detenido en una planicie desértica bajo la Vía Láctea, con un charco de luz cálida sobre la arena"}, {"id": "cap1-22", "file": "assets/cap1-22.jpg", "cap": "I", "n": 22, "w": 1440, "h": 960, "alt": "Arbusto del desierto iluminado en tono rosado bajo la banda luminosa de la Vía Láctea"}, {"id": "cap1-23", "file": "assets/cap1-23.jpg", "cap": "I", "n": 23, "w": 1152, "h": 1440, "alt": "Vía Láctea sobre un peñasco solitario iluminado en naranja en medio del desierto"}, {"id": "cap1-24", "file": "assets/cap1-24.jpg", "cap": "I", "n": 24, "w": 757, "h": 403, "alt": "Arco panorámico de la Vía Láctea sobre lomajes del desierto al anochecer"}, {"id": "cap1-25", "file": "assets/cap1-25.jpg", "cap": "I", "n": 25, "w": 1440, "h": 1363, "alt": "Luna llena en primer plano, cráteres y mares visibles sobre cielo negro"}, {"id": "cap1-26", "file": "assets/cap1-26.jpg", "cap": "I", "n": 26, "w": 810, "h": 1440, "alt": "Árbol seco recortado contra la banda luminosa de la Vía Láctea"}, {"id": "cap1-27", "file": "assets/cap1-27.jpg", "cap": "I", "n": 27, "w": 1080, "h": 1440, "alt": "Señal de carretera verde en el desierto bajo el cielo estrellado y la galaxia"}, {"id": "cap1-28", "file": "assets/cap1-28.jpg", "cap": "I", "n": 28, "w": 1440, "h": 882, "alt": "Vegetación árida del desierto iluminada bajo un cielo densamente estrellado"}, {"id": "cap1-29", "file": "assets/cap1-29.jpg", "cap": "I", "n": 29, "w": 810, "h": 1440, "alt": "Luna creciente delgada sobre cielo azul oscuro"}, {"id": "cap1-30", "file": "assets/cap1-30.jpg", "cap": "I", "n": 30, "w": 1440, "h": 960, "alt": "Salar de suelo agrietado bajo la Vía Láctea con montañas al fondo"}, {"id": "cap2-01", "file": "assets/cap2-01.jpg", "cap": "II", "n": 1, "w": 1440, "h": 849, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-02", "file": "assets/cap2-02.jpg", "cap": "II", "n": 2, "w": 1152, "h": 1440, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-03", "file": "assets/cap2-03.jpg", "cap": "II", "n": 3, "w": 1059, "h": 1440, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-04", "file": "assets/cap2-04.jpg", "cap": "II", "n": 4, "w": 960, "h": 1440, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-05", "file": "assets/cap2-05.jpg", "cap": "II", "n": 5, "w": 960, "h": 1440, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-06", "file": "assets/cap2-06.jpg", "cap": "II", "n": 6, "w": 1152, "h": 1440, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-07", "file": "assets/cap2-07.jpg", "cap": "II", "n": 7, "w": 960, "h": 1440, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-08", "file": "assets/cap2-08.jpg", "cap": "II", "n": 8, "w": 960, "h": 1440, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-09", "file": "assets/cap2-09.jpg", "cap": "II", "n": 9, "w": 960, "h": 1440, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-10", "file": "assets/cap2-10.jpg", "cap": "II", "n": 10, "w": 1440, "h": 1010, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-11", "file": "assets/cap2-11.jpg", "cap": "II", "n": 11, "w": 810, "h": 1440, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-12", "file": "assets/cap2-12.jpg", "cap": "II", "n": 12, "w": 1152, "h": 1440, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-13", "file": "assets/cap2-13.jpg", "cap": "II", "n": 13, "w": 960, "h": 1440, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-14", "file": "assets/cap2-14.jpg", "cap": "II", "n": 14, "w": 960, "h": 1440, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-15", "file": "assets/cap2-15.jpg", "cap": "II", "n": 15, "w": 960, "h": 1440, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-16", "file": "assets/cap2-16.jpg", "cap": "II", "n": 16, "w": 960, "h": 1440, "alt": "Fotografía nocturna con figuras humanas bajo la Vía Láctea, Tarapacá"}, {"id": "cap2-17", "file": "assets/cap2-17.jpg", "cap": "II", "n": 17, "w": 1440, "h": 720, "alt": "Silueta mínima de pie en la cresta de una duna sosteniendo una luz, bajo un amplio arco de la Vía Láctea"}, {"id": "cap2-18", "file": "assets/cap2-18.jpg", "cap": "II", "n": 18, "w": 1152, "h": 1440, "alt": "Dos personas de pie en el campo, mirando la Vía Láctea con un resplandor en el horizonte"}, {"id": "cap2-19", "file": "assets/cap2-19.jpg", "cap": "II", "n": 19, "w": 1440, "h": 960, "alt": "Silueta solitaria bajo el arco de la Vía Láctea sobre el desierto plano"}, {"id": "cap2-20", "file": "assets/cap2-20.jpg", "cap": "II", "n": 20, "w": 1152, "h": 1440, "alt": "Persona de pie con los brazos alzados sosteniendo una luz bajo la galaxia"}, {"id": "cap2-21", "file": "assets/cap2-21.jpg", "cap": "II", "n": 21, "w": 1152, "h": 1440, "alt": "Persona posada sobre la cresta de una duna bajo la Vía Láctea"}, {"id": "cap2-22", "file": "assets/cap2-22.jpg", "cap": "II", "n": 22, "w": 960, "h": 1440, "alt": "Pareja abrazada, sentada bajo la banda luminosa de la galaxia"}, {"id": "cap2-23", "file": "assets/cap2-23.jpg", "cap": "II", "n": 23, "w": 1440, "h": 960, "alt": "Panorámica del arco galáctico con una pequeña silueta humana al centro"}, {"id": "cap2-24", "file": "assets/cap2-24.jpg", "cap": "II", "n": 24, "w": 1440, "h": 960, "alt": "Dos personas sentadas contemplando la Vía Láctea"}, {"id": "cap2-25", "file": "assets/cap2-25.jpg", "cap": "II", "n": 25, "w": 1440, "h": 960, "alt": "Panorámica 360° del arco completo de la Vía Láctea sobre dunas, con una silueta que alza una linterna"}, {"id": "cap3-01", "file": "assets/cap3-01.jpg", "cap": "III", "n": 1, "w": 1035, "h": 1440, "alt": "Fotografía nocturna de una construcción o ruina bajo el cielo estrellado, Tarapacá"}, {"id": "cap3-02", "file": "assets/cap3-02.jpg", "cap": "III", "n": 2, "w": 1440, "h": 960, "alt": "Fotografía nocturna de una construcción o ruina bajo el cielo estrellado, Tarapacá"}, {"id": "cap3-03", "file": "assets/cap3-03.jpg", "cap": "III", "n": 3, "w": 931, "h": 1396, "alt": "Fotografía nocturna de una construcción o ruina bajo el cielo estrellado, Tarapacá"}, {"id": "cap3-04", "file": "assets/cap3-04.jpg", "cap": "III", "n": 4, "w": 929, "h": 1394, "alt": "Fotografía nocturna de una construcción o ruina bajo el cielo estrellado, Tarapacá"}, {"id": "cap3-05", "file": "assets/cap3-05.jpg", "cap": "III", "n": 5, "w": 931, "h": 1398, "alt": "Fotografía nocturna de una construcción o ruina bajo el cielo estrellado, Tarapacá"}, {"id": "cap3-06", "file": "assets/cap3-06.jpg", "cap": "III", "n": 6, "w": 929, "h": 1394, "alt": "Fotografía nocturna de una construcción o ruina bajo el cielo estrellado, Tarapacá"}, {"id": "cap3-07", "file": "assets/cap3-07.jpg", "cap": "III", "n": 7, "w": 931, "h": 1398, "alt": "Fotografía nocturna de una construcción o ruina bajo el cielo estrellado, Tarapacá"}, {"id": "cap3-08", "file": "assets/cap3-08.jpg", "cap": "III", "n": 8, "w": 1152, "h": 1440, "alt": "Crepúsculo púrpura con un punto brillante sobre la cordillera y un pueblo iluminado en el valle"}, {"id": "cap3-09", "file": "assets/cap3-09.jpg", "cap": "III", "n": 9, "w": 1079, "h": 1440, "alt": "Estructuras de adobe y un árbol desnudo bajo la Vía Láctea en el desierto"}, {"id": "cap3-10", "file": "assets/cap3-10.jpg", "cap": "III", "n": 10, "w": 960, "h": 1440, "alt": "Edificio colonial de arcos y farol, iluminado bajo la Vía Láctea en un pueblo del norte"}, {"id": "cap4-01", "file": "assets/cap4-01.jpg", "cap": "IV", "n": 1, "w": 960, "h": 1440, "alt": "Fotografía nocturna de un oasis o cuerpo de agua bajo el cielo estrellado, Tarapacá"}, {"id": "cap4-02", "file": "assets/cap4-02.jpg", "cap": "IV", "n": 2, "w": 960, "h": 1440, "alt": "Fotografía nocturna de un oasis o cuerpo de agua bajo el cielo estrellado, Tarapacá"}, {"id": "cap4-03", "file": "assets/cap4-03.jpg", "cap": "IV", "n": 3, "w": 945, "h": 1440, "alt": "Fotografía nocturna de un oasis o cuerpo de agua bajo el cielo estrellado, Tarapacá"}, {"id": "cap4-04", "file": "assets/cap4-04.jpg", "cap": "IV", "n": 4, "w": 1152, "h": 1440, "alt": "Fotografía nocturna de un oasis o cuerpo de agua bajo el cielo estrellado, Tarapacá"}, {"id": "cap4-05", "file": "assets/cap4-05.jpg", "cap": "IV", "n": 5, "w": 960, "h": 1440, "alt": "Fotografía nocturna de un oasis o cuerpo de agua bajo el cielo estrellado, Tarapacá"}, {"id": "cap4-06", "file": "assets/cap4-06.jpg", "cap": "IV", "n": 6, "w": 1152, "h": 1440, "alt": "Fotografía nocturna de un oasis o cuerpo de agua bajo el cielo estrellado, Tarapacá"}, {"id": "cap4-07", "file": "assets/cap4-07.jpg", "cap": "IV", "n": 7, "w": 1440, "h": 960, "alt": "Fotografía nocturna de un oasis o cuerpo de agua bajo el cielo estrellado, Tarapacá"}];
+
+var CHAPTERS = {
+  "I":   {title:"El cielo en el desierto"},
+  "II":  {title:"Quienes miran"},
+  "III": {title:"Lo que el tiempo dejó"},
+  "IV":  {title:"Oasis y horizontes de agua"}
+};
+
+var SIZES = [
+  {id:"20x30", w:20, h:30,  cost:2160,  label:"20 × 30 cm"},
+  {id:"a4",    w:21, h:29.7,cost:2500,  label:"A4 · 21 × 29,7 cm"},
+  {id:"30x40", w:30, h:40,  cost:4320,  label:"30 × 40 cm"},
+  {id:"40x50", w:40, h:50,  cost:7200,  label:"40 × 50 cm"},
+  {id:"40x60", w:40, h:60,  cost:8640,  label:"40 × 60 cm"},
+  {id:"50x60", w:50, h:60,  cost:10800, label:"50 × 60 cm"},
+  {id:"50x70", w:50, h:70,  cost:12600, label:"50 × 70 cm"},
+  {id:"60x80", w:60, h:80,  cost:17280, label:"60 × 80 cm"},
+  {id:"60x90", w:60, h:90,  cost:19440, label:"60 × 90 cm"}
+];
+
+/* molduras reales que ofrece el proveedor (madera 20 mm) */
+var FRAMES = [
+  {id:"claro",  label:"Madera clara",  bg:"linear-gradient(145deg,#e9cb9b 0%,#d3ab74 45%,#b98d55 100%)"},
+  {id:"oscuro", label:"Madera oscura", bg:"linear-gradient(145deg,#7a5537 0%,#57391f 50%,#3c2715 100%)"},
+  {id:"negro",  label:"Negro",         bg:"linear-gradient(145deg,#2e3036 0%,#1b1d21 50%,#101114 100%)"}
+];
+
+/* solo decorativo para la simulación */
+var WALLS = [
+  {id:"blanco",   label:"Blanco cálido", color:"#efe9df"},
+  {id:"beige",    label:"Beige",         color:"#dccdb4"},
+  {id:"gris",     label:"Gris perla",    color:"#c9c9c5"},
+  {id:"terracota",label:"Terracota",     color:"#a4614a", dark:1},
+  {id:"salvia",   label:"Verde salvia",  color:"#8a9a86"},
+  {id:"grafito",  label:"Grafito",       color:"#43464c", dark:1},
+  {id:"noche",    label:"Azul noche",    color:"#1f2b47", dark:1}
+];
+
+var MARGIN = 0.35;                 /* margen base sobre el precio de venta */
+var PRICE_UP = 1.45;               /* alza pedida: precio anterior × 1,45 */
+/* precio = ceil(costeo/0.65 a miles) × 1.45, redondeado HACIA ARRIBA a miles */
+function priceOf(cost){
+  var base = Math.ceil(cost / (1 - MARGIN) / 1000) * 1000;
+  return Math.ceil(base * PRICE_UP / 1000) * 1000;
+}
+var CLP = new Intl.NumberFormat("es-CL", {style:"currency", currency:"CLP", maximumFractionDigits:0});
+function fmt(n){ return CLP.format(n); }
+function byId(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+/* ── Envíos BlueXpress · origen Iquique ─────────────────────────────
+   Tarifas de referencia según la tabla pública de Blue Express por
+   región y TALLA del paquete (S ≤3kg · M 3–6kg · L 6–16kg · XL 16–25kg),
+   con IVA incluido. Los cuadros se clasifican por peso VOLUMÉTRICO:
+   (ancho+6)(alto+6)(6 cm espesor embalaje) / 4000. Ajustar aquí. */
+var REGIONS = [
+  {id:"I",  name:"Tarapacá (misma región)"},
+  {id:"XV", name:"Arica y Parinacota"},
+  {id:"II", name:"Antofagasta"},
+  {id:"III",name:"Atacama"},
+  {id:"IV", name:"Coquimbo"},
+  {id:"V",  name:"Valparaíso"},
+  {id:"XIII",name:"Metropolitana"},
+  {id:"VI", name:"O'Higgins"},
+  {id:"VII",name:"Maule"},
+  {id:"XVI",name:"Ñuble"},
+  {id:"VIII",name:"Biobío"},
+  {id:"IX", name:"Araucanía"},
+  {id:"XIV",name:"Los Ríos"},
+  {id:"X",  name:"Los Lagos"},
+  {id:"XI", name:"Aysén"},
+  {id:"XII",name:"Magallanes"}
+];
+var RATES = {
+  "I":    {S:3500,  M:4500,  L:6000,  XL:9000},
+  "XV":   {S:5000,  M:6500,  L:8500,  XL:12500},
+  "II":   {S:5500,  M:7000,  L:9500,  XL:13500},
+  "III":  {S:6500,  M:8000,  L:11000, XL:15500},
+  "IV":   {S:7500,  M:9000,  L:12500, XL:17500},
+  "V":    {S:8000,  M:9500,  L:13500, XL:19000},
+  "XIII": {S:8500,  M:10500, L:15000, XL:21000},
+  "VI":   {S:9000,  M:11000, L:16000, XL:22000},
+  "VII":  {S:9500,  M:11500, L:16500, XL:23000},
+  "XVI":  {S:10000, M:12000, L:17500, XL:24000},
+  "VIII": {S:10000, M:12500, L:18000, XL:25000},
+  "IX":   {S:10500, M:13000, L:18500, XL:26000},
+  "XIV":  {S:11000, M:13500, L:19500, XL:27000},
+  "X":    {S:11000, M:13500, L:19500, XL:27000},
+  "XI":   {S:13000, M:16000, L:24000, XL:33000},
+  "XII":  {S:13500, M:17000, L:25500, XL:35000}
+};
+var FREE_SHIP_FROM = 80000;   /* envío gratis sobre este subtotal físico */
+var regionSel = "";
+
+function isGift(it){ return String(it.pid).indexOf("gift") === 0; }
+/* peso volumétrico total de los ítems físicos del pedido */
+function physicalVW(){
+  var vw = 0;
+  order.forEach(function(it){
+    if (isGift(it)) return;
+    var z = sizeOf(it.size);
+    for (var q = 0; q < it.qty; q++)
+      vw += (z.w + 6) * (z.h + 6) * 6 / 4000;
+  });
+  return vw;
+}
+function parcelSize(){
+  var vw = physicalVW();
+  return vw <= 3 ? "S" : vw <= 6 ? "M" : vw <= 16 ? "L" : "XL";
+}
+function shipFee(){
+  if (!order.length) return null;
+  var subPhys = 0, anyPhysical = false;
+  order.forEach(function(it){
+    if (isGift(it)) return;
+    anyPhysical = true;
+    subPhys += unitPrice(it) * it.qty;
+  });
+  if (!anyPhysical) return 0;              /* solo regalos: llega por correo */
+  if (!regionSel) return null;
+  if (subPhys >= FREE_SHIP_FROM) return 0;
+  var r = RATES[regionSel];
+  return r ? r[parcelSize()] : null;
+}
+function orderTotal(){
+  return order.reduce(function(a,it){ return a + unitPrice(it) * it.qty; }, 0);
+}
+function grandTotal(){ var s = shipFee(); return orderTotal() + (s || 0); }
+
+/* ── Tarjetas de regalo ── */
+var GIFTS = [
+  {id:"gift20", value:20000},
+  {id:"gift30", value:30000},
+  {id:"gift50", value:50000},
+  {id:"gift75", value:75000}
+];
+
+/* ================================================================
+   RENDER: tarjetas de tienda (única rejilla de obras)
+   ================================================================ */
+(function(){
+  var s = byId("shop-grid");
+  var sh = "";
+  PRODUCTS.forEach(function(p){
+    var name = CHAPTERS[p.cap].title + " · N.º " + ("0"+p.n).slice(-2);
+    var from = priceOf(Math.min.apply(null, SIZES.map(function(z){return z.cost;})));
+    var mid  = priceOf(SIZES[3].cost); /* 40x50 como referencia */
+    sh += '<article class="shop-card" id="shop-'+p.id+'" data-cat="'+p.cap+'">'
+        +   '<div class="ph"><img src="'+p.file+'" alt="'+esc(p.alt)+'" loading="lazy" decoding="async">'
+        +     '<span class="ed">N.º '+("0"+p.n).slice(-2)+' · Cap. '+p.cap+'</span></div>'
+        +   '<div class="body"><h3>'+esc(name)+'</h3>'
+        +     '<p class="desc">'+esc(p.alt)+'</p>'
+        +     '<p class="from">Cuadro desde <b>'+fmt(from)+'</b> · formato 40×50: <b>'+fmt(mid)+'</b></p>'
+        +     '<button class="btn btn-primary" type="button" data-pid="'+p.id+'">Verlo enmarcado y con precio</button>'
+        +   '</div></article>';
+  });
+  s.innerHTML = sh;
+
+  /* filtro de categoría */
+  document.querySelectorAll(".filters").forEach(function(bar){
+    bar.addEventListener("click", function(ev){
+      var chip = ev.target.closest(".chip"); if (!chip) return;
+      bar.querySelectorAll(".chip").forEach(function(c){ c.setAttribute("aria-pressed", String(c === chip)); });
+      var cat = chip.dataset.cat;
+      var grid = byId("shop-grid");
+      grid.querySelectorAll("[data-cat]").forEach(function(item){
+        item.hidden = !(cat === "all" || item.dataset.cat === cat);
+      });
+      var n = grid.querySelectorAll("[data-cat]:not([hidden])").length;
+      byId("filter-status").textContent = n + " fotografías visibles.";
+    });
+  });
+})();
+
+/* ================================================================
+   SIMULADOR
+   ================================================================ */
+var sim = {
+  p: null,
+  size: SIZES[3],            /* 40×50 por defecto */
+  orient: "auto",            /* auto = orientación natural de la foto */
+  frame: FRAMES[2],          /* negro por defecto */
+  wall: WALLS[0]
+};
+
+function currentDims(){
+  var w = sim.size.w, h = sim.size.h;
+  if (sim.orient === "v" && w > h) { return {w:h, h:w}; }
+  if (sim.orient === "h" && h > w) { return {w:h, h:w}; }
+  return {w:w, h:h};
+}
+function naturalOrient(){
+  if (!sim.p) return "h";
+  return sim.p.w >= sim.p.h ? "h" : "v";
+}
+function effectiveOrient(){
+  return sim.orient === "auto" ? naturalOrient() : sim.orient;
+}
+
+function renderSim(){
+  /* --- escena pared --- */
+  var scene = byId("wall");
+  scene.style.backgroundColor = sim.wall.color;
+  scene.dataset.dark = sim.wall.dark ? "1" : "0";
+
+  var d = {w:sim.size.w, h:sim.size.h};
+  var eo = effectiveOrient();
+  if ((eo === "v") !== (d.h >= d.w)) { d = {w:d.h, h:d.w}; }
+
+  var area = scene.getBoundingClientRect();
+  var availW = Math.max(area.width  - 72, 160);
+  var availH = Math.max(area.height - 88, 160);
+  var pxPerCm = Math.min(availW / d.w, availH / d.h);
+  var fw = 2 * pxPerCm;                      /* moldura 20 mm */
+  var artW = d.w * pxPerCm, artH = d.h * pxPerCm;
+
+  var fr = byId("frame"), op = byId("opening");
+  fr.style.setProperty("--fw", fw.toFixed(1) + "px");
+  fr.style.setProperty("--frame-bg", sim.frame.bg);
+  op.style.width  = Math.round(artW) + "px";
+  op.style.height = Math.round(artH) + "px";
+
+  var img = byId("art-img");
+  if (sim.p){
+    img.src = sim.p.file;
+    img.alt = sim.p.alt;
+  }
+
+  /* --- panel --- */
+  byId("cfg-line").textContent =
+    (sim.p ? "Cuadro " + sim.p.id.replace("cap","").replace("-",".") + " · " : "")
+    + sim.size.label + " · " + (eo === "v" ? "vertical" : "horizontal")
+    + " · moldura " + sim.frame.label.toLowerCase();
+  byId("price-line").textContent = fmt(priceOf(sim.size.cost));
+  byId("direct-wa").href = "https://wa.me/" + CARLOS_WA + "?text=" + encodeURIComponent(
+    "Hola Carlos, me interesa este cuadro:\n\n"
+    + "Obra: " + (sim.p ? sim.p.id.replace("cap","").replace("-",".") + " — " + CHAPTERS[sim.p.cap].title : "(elegir)")
+    + "\nTamaño: " + sim.size.label + " " + (eo === "v" ? "vertical" : "horizontal")
+    + "\nMoldura: " + sim.frame.label
+    + "\nPrecio en tu web: " + fmt(priceOf(sim.size.cost))
+    + "\n\n¿Me confirmas disponibilidad, el envío a mi ciudad y las formas de pago?");
+}
+
+/* botones de tamaño y marco, generados */
+(function(){
+  var row = byId("size-opts");
+  SIZES.forEach(function(z){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.dataset.size = z.id;
+    b.setAttribute("aria-pressed", String(z.id === sim.size.id));
+    b.innerHTML = z.label + ' <span class="sub">' + fmt(priceOf(z.cost)) + "</span>";
+    b.addEventListener("click", function(){
+      sim.size = z;
+      row.querySelectorAll(".opt").forEach(function(o){ o.setAttribute("aria-pressed", "false"); });
+      b.setAttribute("aria-pressed", "true");
+      renderSim();
+    });
+    row.appendChild(b);
+  });
+
+  var frow = byId("frame-opts");
+  FRAMES.forEach(function(f){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "opt";
+    b.setAttribute("aria-pressed", String(f.id === sim.frame.id));
+    b.innerHTML = '<span class="swatch" style="background:'+f.bg+'"></span>' + f.label;
+    b.addEventListener("click", function(){
+      sim.frame = f;
+      frow.querySelectorAll(".opt").forEach(function(o){ o.setAttribute("aria-pressed", "false"); });
+      b.setAttribute("aria-pressed", "true");
+      renderSim();
+    });
+    frow.appendChild(b);
+  });
+
+  var wrow = byId("wall-opts");
+  WALLS.forEach(function(wl){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "opt";
+    b.setAttribute("aria-pressed", String(wl.id === sim.wall.id));
+    b.innerHTML = '<span class="swatch" style="background:'+wl.color+'"></span>' + wl.label;
+    b.addEventListener("click", function(){
+      sim.wall = wl;
+      wrow.querySelectorAll(".opt").forEach(function(o){ o.setAttribute("aria-pressed", "false"); });
+      b.setAttribute("aria-pressed", "true");
+      renderSim();
+    });
+    wrow.appendChild(b);
+  });
+
+  document.querySelectorAll("[data-orient]").forEach(function(b){
+    b.addEventListener("click", function(){
+      sim.orient = b.dataset.orient;
+      document.querySelectorAll("[data-orient]").forEach(function(o){ o.setAttribute("aria-pressed","false"); });
+      b.setAttribute("aria-pressed", "true");
+      renderSim();
+    });
+  });
+})();
+
+/* cargar obra en el simulador desde cualquier rejilla */
+document.addEventListener("click", function(ev){
+  var btn = ev.target.closest("[data-pid]"); if (!btn) return;
+  var p = PRODUCTS.filter(function(x){ return x.id === btn.dataset.pid; })[0];
+  if (!p) return;
+  sim.p = p;
+  sim.orient = "auto";
+  document.querySelectorAll("[data-orient]").forEach(function(o){
+    o.setAttribute("aria-pressed", String(o.dataset.orient === "h" && p.w >= p.h || o.dataset.orient === "v" && p.h > p.w));
+  });
+  byId("sim-thumb").src = p.file; byId("sim-thumb").alt = "";
+  byId("sim-work").textContent = CHAPTERS[p.cap].title + " · N.º " + ("0"+p.n).slice(-2);
+  byId("sim-desc").textContent = p.alt;
+  renderSim();
+  byId("simulador").scrollIntoView({behavior: document.documentElement.dataset.motion === "off" ? "auto" : "smooth"});
+});
+
+/* ================================================================
+   PEDIDO (carrito simulado) — persistido en localStorage
+   ================================================================ */
+var ORDER_KEY = "ciel…s-v1";
+var order = [];
+try { order = JSON.parse(localStorage.getItem(ORDER_KEY) || "[]") || []; } catch(e){ order = []; }
+function saveOrder(){ try { localStorage.setItem(ORDER_KEY, JSON.stringify(order)); } catch(e){} }
+
+function orderKeyOf(it){ return [it.pid, it.size, it.orient, it.frame].join("|"); }
+
+function addToOrder(){
+  if (!sim.p){ alert("Primero elige una obra en la galería o la tienda."); return; }
+  var eo = effectiveOrient();
+  var it = {pid: sim.p.id, size: sim.size.id, orient: eo, frame: sim.frame.id, qty: 1};
+  var k = orderKeyOf(it);
+  var found = order.filter(function(o){ return orderKeyOf(o) === k; })[0];
+  if (found) found.qty += 1; else order.push(it);
+  saveOrder(); renderOrder();
+  byId("fab-count").textContent = order.reduce(function(a,o){return a+o.qty;},0);
+  openOrder(true);
+}
+
+function sizeOf(id){ return SIZES.filter(function(z){return z.id===id;})[0] || SIZES[0]; }
+function frameOf(id){ return FRAMES.filter(function(f){return f.id===id;})[0] || FRAMES[0]; }
+function productOf(id){ return PRODUCTS.filter(function(p){return p.id===id;})[0]; }
+
+function lineText(it){
+  if (isGift(it)){
+    var g = GIFTS.filter(function(x){ return x.id === it.pid; })[0];
+    return "Tarjeta de regalo " + fmt(g ? g.value : it.value)
+      + (it.to ? " · para " + it.to : "");
+  }
+  if (it.pid === "custom"){
+    var zc = sizeOf(it.size);
+    return "Tu cuadro con tu foto · " + zc.label
+      + " · " + (it.orient === "v" ? "vertical" : "horizontal") + " · moldura " + frameOf(it.frame).label;
+  }
+  var p = productOf(it.pid);
+  var z = sizeOf(it.size);
+  return (p ? "N.º " + p.id.replace("cap", "").replace("-", ".") : it.pid) + " · " + z.label
+    + " · " + (it.orient === "v" ? "vertical" : "horizontal") + " · moldura " + frameOf(it.frame).label;
+}
+function unitPrice(it){ return isGift(it) ? it.value : priceOf(sizeOf(it.size).cost); }
+function orderLines(){
+  return order.map(function(it){
+    return "• " + lineText(it) + " × " + it.qty + " — " + fmt(unitPrice(it) * it.qty);
+  });
+}
+
+/* totales que ve el cliente (ordenadas para el resumen) */
+function totals(){
+  var sub = orderTotal(), fee = shipFee();
+  var region = REGIONS.filter(function(x){return x.id===regionSel;})[0];
+  return {
+    sub: sub, fee: fee, total: grandTotal(),
+    regionName: region ? region.name : ""
+  };
+}
+function totalsLines(){
+  var t = totals();
+  var anyPhysical = order.some(function(it){ return !isGift(it); });
+  var l = [];
+  l.push("Subtotal productos: " + fmt(t.sub));
+  if (!anyPhysical && order.length) l.push("Entrega: tarjeta/s digitales por correo, sin envío");
+  else if (t.fee === null) l.push("Envío BlueXpress: por confirmar (elige región)");
+  else if (t.fee === 0) l.push("Envío BlueXpress: GRATIS (sobre " + fmt(FREE_SHIP_FROM) + ")");
+  else l.push("Envío BlueXpress" + (t.regionName ? " a " + t.regionName : "") + ": " + fmt(t.fee));
+  l.push("TOTAL: " + fmt(t.total));
+  l.push("El pago se coordina directamente con Carlos.");
+  l.push("Plazo de entrega estimado: 4 a 7 días");
+  return l;
+}
+
+function renderOrder(){
+  var list = byId("order-list");
+  var fab = byId("order-fab");
+  var count = order.reduce(function(a,o){return a+o.qty;},0);
+  fab.hidden = count === 0;
+  byId("fab-count").textContent = count;
+  var t = totals();
+  byId("sub-amount").textContent = fmt(t.sub);
+  byId("ship-amount").textContent = t.fee === null ? "elige región" : (t.fee === 0 ? "Gratis" : fmt(t.fee));
+  byId("total-amount").textContent = fmt(t.total);
+
+  var recap = byId("order-recap");
+  if (!order.length){
+    list.innerHTML = '<p class="order-empty">Aún no has agregado cuadros.<br>Configura uno en el simulador y toca «Agregar a pedido».</p>';
+    recap.textContent = "Tu pedido aparecerá aquí cuando agregues cuadros en el simulador.";
+    return;
+  }
+  var h = "";
+  order.forEach(function(it, i){
+    var p = productOf(it.pid);
+    h += '<div class="order-item">'
+       + (p ? '<img src="'+p.file+'" alt="">' : "")
+       + '<div class="meta"><p class="t">'+fmt(unitPrice(it))+'</p>'
+       +   '<p>'+esc(lineText(it))+'</p>'
+       +   '<div class="ctrl">'
+       +     '<button type="button" data-act="dec" data-i="'+i+'" aria-label="Quitar uno">−</button>'
+       +     '<span class="qty">'+it.qty+'</span>'
+       +     '<button type="button" data-act="inc" data-i="'+i+'" aria-label="Agregar uno">+</button>'
+       +     '<button class="rm" type="button" data-act="rm" data-i="'+i+'">eliminar</button>'
+       +   '</div></div></div>';
+  });
+  list.innerHTML = h;
+  var rl = ["RESUMEN DE TU PEDIDO"];
+  rl = rl.concat(orderLines());
+  rl = rl.concat(totalsLines());
+  if (t.regionName) rl.push("Enviar a: " + t.regionName);
+  recap.textContent = rl.join("\n");
+}
+byId("order-list").addEventListener("click", function(ev){
+  var b = ev.target.closest("button[data-act]"); if (!b) return;
+  var i = parseInt(b.dataset.i, 10);
+  if (b.dataset.act === "inc") order[i].qty += 1;
+  if (b.dataset.act === "dec") { order[i].qty -= 1; if (order[i].qty <= 0) order.splice(i, 1); }
+  if (b.dataset.act === "rm") order.splice(i, 1);
+  saveOrder(); renderOrder();
+});
+
+/* abrir/cerrar panel */
+var panel = byId("order-panel"), overlay = byId("overlay");
+function openOrder(o){
+  panel.classList.toggle("open", o);
+  overlay.classList.toggle("show", o);
+  panel.setAttribute("aria-hidden", String(!o));
+  if (o) byId("close-order").focus();
+}
+byId("order-fab").addEventListener("click", function(){ openOrder(true); });
+byId("close-order").addEventListener("click", function(){ openOrder(false); byId("order-fab").focus(); });
+overlay.addEventListener("click", function(){ openOrder(false); });
+document.addEventListener("keydown", function(ev){ if (ev.key === "Escape") openOrder(false); });
+byId("clear-order").addEventListener("click", function(){ order = []; saveOrder(); renderOrder(); });
+byId("add-to-order").addEventListener("click", addToOrder);
+
+/* «Enviar pedido» dentro del panel: cierra el panel y dispara el mismo
+   envío validado del formulario (WhatsApp + correo). Si faltan datos,
+   el manejador del formulario reabre el panel y enfoca lo que falta. */
+byId("send-order").addEventListener("click", function(){
+  /* paso final: datos del comprador + cálculo total en Contacto */
+  openOrder(false);
+  byId("contacto").scrollIntoView({behavior: document.documentElement.dataset.motion === "off" ? "auto" : "smooth"});
+  setTimeout(function(){ byId("f-name").focus({preventScroll:true}); }, 650);
+});
+
+/* ================================================================
+   REGALOS — tarjetas de monto fijo
+   ================================================================ */
+var giftSel = GIFTS[2]; /* 50.000 destacada por defecto */
+(function(){
+  var grid = byId("gift-grid");
+  var NAMES = {20000:"Cielo Amigo", 30000:"Cielo Cómplice", 50000:"Cielo Mayor", 75000:"Cielo Infinito"};
+  var SUBS  = {20000:"Hasta un 40×50 enmarcado", 30000:"Hasta un 50×60 enmarcado",
+               50000:"Hasta un 60×80 enmarcado", 75000:"Hasta un 60×90 + extras"};
+  GIFTS.forEach(function(g){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "gift-card"; b.dataset.gid = g.id;
+    b.setAttribute("aria-pressed", String(g.id === giftSel.id));
+    b.innerHTML = '<span class="gval">' + fmt(g.value) + '</span>'
+      + '<span class="gname">' + NAMES[g.value] + '</span>'
+      + '<span class="gsub">' + SUBS[g.value] + '</span>';
+    b.addEventListener("click", function(){
+      giftSel = g;
+      grid.querySelectorAll(".gift-card").forEach(function(c){
+        var on = c.dataset.gid === g.id;
+        c.setAttribute("aria-pressed", String(on));
+        c.classList.toggle("selected", on);
+      });
+    });
+    grid.appendChild(b);
+    if (g.id === giftSel.id) b.classList.add("selected");
+  });
+  byId("gift-add").addEventListener("click", function(){
+    var to = byId("gift-to").value.trim();
+    order.push({pid: giftSel.id, value: giftSel.value, size:"gift20", orient:"h", frame:"negro",
+                qty: 1, to: to, msg: byId("gift-msg").value.trim()});
+    saveOrder(); renderOrder(); openOrder(true);
+  });
+})();
+
+/* ================================================================
+   CREA TU CUADRO — foto del cliente, todo local en el navegador
+   ================================================================ */
+var cust = {img:null, iw:0, ih:0, size:SIZES[3], frame:FRAMES[2], wall:WALLS[0]};
+(function(){
+  var input = byId("file-input"), zone = byId("upload-zone"), wrap = byId("custom-prevewrap");
+  input.addEventListener("change", function(){
+    var f = input.files && input.files[0]; if (!f) return;
+    var url = URL.createObjectURL(f);
+    var im = new Image();
+    im.onload = function(){
+      cust.img = url; cust.iw = im.naturalWidth; cust.ih = im.naturalHeight;
+      wrap.classList.add("on");
+      renderCustom();
+      byId("quality-msg").scrollIntoView({behavior: document.documentElement.dataset.motion === "off" ? "auto" : "smooth", block:"start"});
+    };
+    if (f.size > 15*1024*1024){ quality("bad", "Ese archivo pesa más de 15 MB. Envíalo más ligero o coordínalo directo con Carlos."); input.value=""; return; }
+    im.onerror = function(){ quality("bad", "No pudimos leer esa imagen. Usa un JPG o PNG de tu cámara o galería."); };
+    im.src = url;
+  });
+  ["dragover","dragleave","drop"].forEach(function(t){
+    zone.addEventListener(t, function(ev){
+      ev.preventDefault();
+      zone.classList.toggle("drag", t === "dragover");
+      if (t === "drop" && ev.dataTransfer.files[0]){
+        input.files = ev.dataTransfer.files;
+        input.dispatchEvent(new Event("change"));
+      }
+    });
+  });
+  function mkOpts(row, items, get, set){
+    items.forEach(function(o){
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "opt";
+      var sw = o.bg || o.color;
+      b.innerHTML = (sw ? '<span class="swatch" style="background:'+sw+'"></span>' : "") + (o.label || "");
+      b.setAttribute("aria-pressed", String(get() === o));
+      b.addEventListener("click", function(){
+        set(o);
+        row.querySelectorAll(".opt").forEach(function(x){ x.setAttribute("aria-pressed","false"); });
+        b.setAttribute("aria-pressed","true");
+        renderCustom();
+      });
+      row.appendChild(b);
+    });
+  }
+  var srow = byId("c-size-opts");
+  SIZES.forEach(function(z){
+    var b = document.createElement("button");
+    b.type="button"; b.className="opt"; b.innerHTML = z.label + ' <span class="sub">' + fmt(priceOf(z.cost)) + '</span>';
+    b.setAttribute("aria-pressed", String(z.id === cust.size.id));
+    b.addEventListener("click", function(){
+      cust.size = z;
+      srow.querySelectorAll(".opt").forEach(function(x){x.setAttribute("aria-pressed","false");});
+      b.setAttribute("aria-pressed","true"); renderCustom();
+    });
+    srow.appendChild(b);
+  });
+  mkOpts(byId("c-frame-opts"), FRAMES, function(){return cust.frame;}, function(o){cust.frame=o;});
+  var WALLS_C = WALLS.slice(0,5);
+  mkOpts(byId("c-wall-opts"), WALLS_C, function(){return cust.wall;}, function(o){cust.wall=o;});
+  byId("c-clear").addEventListener("click", function(){
+    cust.img=null; input.value=""; wrap.classList.remove("on"); quality("", "");
+  });
+  byId("c-add").addEventListener("click", function(){
+    if (!cust.img){ quality("bad","Primero elige una foto arriba."); return; }
+    order.push({pid:"custom", size:cust.size.id, orient: cust.iw >= cust.ih ? "h":"v", frame:cust.frame.id, qty:1});
+    saveOrder(); renderOrder(); openOrder(true);
+  });
+
+  function quality(cls, text){
+    var q = byId("quality-msg");
+    q.className = cls; q.textContent = text;
+  }
+  window.renderCustom = function(){
+    var scene = byId("custom-scene");
+    scene.style.backgroundColor = cust.wall.color;
+    scene.dataset.dark = cust.wall.dark ? "1" : "0";
+    var d = {w:cust.size.w, h:cust.size.h};
+    if (cust.iw && cust.ih){
+      var natH = cust.ih > cust.iw;
+      if ((natH) !== (d.h >= d.w)) d = {w:d.h, h:d.w};
+    }
+    var area = scene.getBoundingClientRect();
+    var availW = Math.max(area.width - 92, 140);
+    var availH = Math.max(area.height - 100, 140);
+    var pxPerCm = Math.min(availW / d.w, availH / d.h);
+    var fr = byId("custom-frame"), op = byId("custom-opening"), img = byId("custom-img");
+    fr.style.setProperty("--fw", (2 * pxPerCm).toFixed(1) + "px");
+    fr.style.setProperty("--frame-bg", cust.frame.bg);
+    op.style.width = Math.round(d.w * pxPerCm) + "px";
+    op.style.height = Math.round(d.h * pxPerCm) + "px";
+    if (cust.img){ img.src = cust.img; }
+    byId("c-cfg-line").textContent = "Tu foto · " + cust.size.label
+      + " · " + (d.h >= d.w ? "vertical" : "horizontal") + " · moldura " + cust.frame.label.toLowerCase();
+    byId("c-price-line").textContent = fmt(priceOf(cust.size.cost));
+    if (cust.img && cust.iw){
+      /* calidad: píxeles necesarios a ~220 dpi (aceptable en pared a distancia) */
+      var longCm = Math.max(cust.size.w, cust.size.h);
+      var need = longCm / 2.54 * 220;
+      var have = Math.max(cust.iw, cust.ih);
+      if (have >= need * 1.4) quality("ok", "Excelente: " + cust.iw + "×" + cust.ih + " px — ideal para " + cust.size.label + ".");
+      else if (have >= need) quality("ok", "Buena calidad: " + cust.iw + "×" + cust.ih + " px para " + cust.size.label + ".");
+      else if (have >= need * 0.6) quality("warn", "Calidad justa (" + Math.round(have/need*100) + "% de lo ideal). Se verá bien de lejos; Carlos te confirmará antes de imprimir.");
+      else quality("bad", "Resolución baja para " + cust.size.label + " (" + cust.iw + "×" + cust.ih + " px). Elige un tamaño menor o una foto de mayor resolución (cámara, no WhatsApp).");
+    }
+  };
+})();
+
+/* ================================================================
+   REGIÓN DE ENVÍO — select generado + persistencia
+   ================================================================ */
+(function(){
+  var sel = byId("region-select");
+  REGIONS.forEach(function(r){
+    var o = document.createElement("option");
+    o.value = r.id;
+    o.textContent = "Región de " + r.name + " · desde " + fmt(RATES[r.id].S);
+    sel.appendChild(o);
+  });
+  try {
+    var saved = localStorage.getItem("ch-region") || "";
+    if (REGIONS.some(function(r){ return r.id === saved; })) { regionSel = saved; sel.value = saved; }
+  } catch(e){}
+  sel.addEventListener("change", function(){
+    regionSel = sel.value;
+    try { localStorage.setItem("ch-region", regionSel); } catch(e){}
+    renderOrder();
+  });
+})();
+
+/* ================================================================
+   FORMULARIO → WhatsApp + correo, ambos con el resumen completo
+   ================================================================ */
+var CARLOS_WA = "56957555679";
+var CARLOS_MAIL = "101411HC@proton.me";
+
+byId("contact-form").addEventListener("submit", function(ev){
+  ev.preventDefault();
+  var ok = true;
+  var name = byId("f-name"), email = byId("f-email"), msg = byId("f-msg");
+  byId("ff-name").classList.toggle("invalid", !name.value.trim());
+  if (!name.value.trim()) ok = false;
+  var emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value.trim());
+  byId("ff-email").classList.toggle("invalid", !emailOk);
+  if (!emailOk) ok = false;
+  /* si hay productos físicos, la región es obligatoria para calcular el envío */
+  var needsRegion = order.some(function(it){ return !isGift(it); }) && !regionSel;
+  var hint = byId("region-hint");
+  if (needsRegion){
+    hint.style.color = "#f0b8b8";
+    hint.textContent = "⚠ Elige tu región para calcular el envío";
+    ok = false;
+  } else {
+    hint.style.color = "";
+    hint.textContent = "4 a 7 días";
+  }
+  if (!ok){
+    if (needsRegion) byId("region-select").focus();
+    else (name.value.trim() && emailOk ? msg : (name.value.trim() ? email : name)).focus();
+    openOrder(true); /* que vea el resumen y la región */
+    return;
+  }
+
+  var lines = ["Hola Carlos, quiero confirmar este pedido de tu tienda.", ""];
+  lines.push("Nombre: " + name.value.trim());
+  lines.push("Correo: " + email.value.trim());
+  if (order.length){
+    lines.push("", "PEDIDO:", orderLines().join("\n"));
+    var tn = totals().regionName;
+    if (tn) lines.push("Enviar a: " + tn);
+    lines.push("", totalsLines().join("\n"));
+    order.forEach(function(it){
+      if (isGift(it) && (it.to || it.msg))
+        lines.push("", "Tarjeta" + (it.to ? " para " + it.to : "") + (it.msg ? " — dedicatoria: «" + it.msg + "»" : ""));
+    });
+    lines.push("", "Quedo atento a la confirmación de disponibilidad, envío y formas de pago.");
+  } else {
+    lines.push("", "(Sin cuadro configurado todavía — solo consulta.)");
+  }
+  if (msg.value.trim()) lines.push("", "Mensaje: " + msg.value.trim());
+  lines.push("", "— enviado desde tienda Cielos de Tarapacá");
+  var body = lines.join("\n");
+  openOrder(false); /* cerrar el panel: el pedido salió */
+
+  /* 1) WhatsApp en pestaña nueva */
+  window.open("https://wa.me/" + CARLOS_WA + "?text=" + encodeURIComponent(body), "_blank", "noopener");
+  /* 2) Correo: abre el gestor de mail del visitante sin salir de la página */
+  window.location.href = "mailto:" + CARLOS_MAIL
+    + "?subject=" + encodeURIComponent("Pedido tienda Cielos de Tarapacá — " + name.value.trim())
+    + "&body=" + encodeURIComponent(body);
+});
+
+/* ================================================================
+   MOVIMIENTO REDUCIDO (interruptor + preferencia del sistema)
+   ================================================================ */
+(function(){
+  var btn = byId("motion-toggle");
+  function setMode(off){
+    document.documentElement.dataset.motion = off ? "off" : "on";
+    btn.setAttribute("aria-pressed", String(off));
+    btn.textContent = off ? "◐ Movimiento: reducido" : "◐ Movimiento";
+    try { localStorage.setItem("ch-motion", off ? "off" : "on"); } catch(e){}
+  }
+  var saved = null;
+  try { saved = localStorage.getItem("ch-motion"); } catch(e){}
+  var sys = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  setMode(saved ? saved === "off" : sys);
+  btn.addEventListener("click", function(){
+    setMode(document.documentElement.dataset.motion !== "off");
+  });
+})();
+
+/* ================================================================
+   MODO "VERSIÓN WEB" (escritorio) en el celular
+   ================================================================ */
+(function(){
+  var KEY = "ch-desk";
+  var DESK = "width=1280", MOV = "width=device-width, initial-scale=1";
+  var meta = document.querySelector('meta[name="viewport"]');
+  var btn = document.createElement("button");
+  btn.type = "button"; btn.id = "desk-toggle"; btn.className = "btn";
+  btn.style.cssText = "min-height:48px;margin-bottom:1.2rem;";
+  var footer = document.querySelector("footer");
+  footer.insertBefore(btn, footer.firstChild);
+  function apply(on){
+    meta.setAttribute("content", on ? DESK : MOV);
+    btn.textContent = on ? "Volver a vista de celular" : "Ver sitio web completo";
+    btn.setAttribute("aria-pressed", String(on));
+    btn.style.display = (on || window.matchMedia("(max-width: 760px)").matches) ? "inline-flex" : "none";
+    try { localStorage.setItem(KEY, on ? "1" : "0"); } catch(e){}
+  }
+  var want = false;
+  try { want = localStorage.getItem(KEY) === "1"; } catch(e){}
+  apply(want);
+  btn.addEventListener("click", function(){
+    apply(meta.getAttribute("content") === MOV);
+    window.scrollTo(0, 0);
+  });
+})();
+
+/* nav activo según sección visible */
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll("#topnav a"));
+  var secs = links.map(function(a){ return document.querySelector(a.getAttribute("href")); });
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if (!e.isIntersecting) return;
+      links.forEach(function(a, i){ a.classList.toggle("active", secs[i] === e.target); });
+    });
+  }, {threshold: 0, rootMargin: "-40% 0px -55% 0px"});
+  secs.forEach(function(s){ if (s) io.observe(s); });
+})();
+
+renderOrder();
+renderSim();
+window.addEventListener("resize", function(){ requestAnimationFrame(renderSim); });
+</script>
+</body>
+</html>
